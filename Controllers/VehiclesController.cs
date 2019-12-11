@@ -33,7 +33,7 @@ namespace Garage2.Controllers
         // Post: Vehicle/Park
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Park([Bind("RegistrationNumber,Type,Colour,Manufacturer,Model,NumberOfWheels")] ParkedVehicle vehicle)
+        public async Task<IActionResult> Park( ParkedVehicle vehicle)
         {
             if (ModelState.IsValid)
             {
