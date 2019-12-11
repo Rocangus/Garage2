@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Garage2.Models;
 using Garage2.Data;
+using Garage2.ViewModels;
+using Microsoft.EntityFrameworkCore;
 
 namespace Garage2.Controllers
 {
@@ -18,9 +20,10 @@ namespace Garage2.Controllers
             _context = context;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
+            var vehicles = await _context.Contracts.ToListAsync();
+            return View(vehicles);
         }
 
         // Get: Vehicle/Park
@@ -33,7 +36,7 @@ namespace Garage2.Controllers
         // Post: Vehicle/Park
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Park([Bind("RegistrationNumber,Type,Colour,Manufacturer,Model,NumberOfWheels")] ParkedVehicle vehicle)
+        public async Task<IActionResult> Park( ParkedVehicle vehicle)
         {
             if (ModelState.IsValid)
             {
