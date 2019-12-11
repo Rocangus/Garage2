@@ -20,9 +20,9 @@ namespace Garage2.Controllers
             _context = context;
         }
 
-        public async Task<IActionResult> Index(VehicleSummaryViewModel model)
+        public async Task<IActionResult> Index()
         {
-            var vehicles = await _context.Contracts.Where(c => c.Vehicle.RegistrationNumber == model.RegistrationNumber).ToListAsync();
+            var vehicles = await _context.Contracts.ToListAsync();
             return View(vehicles);
         }
 
