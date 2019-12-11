@@ -9,7 +9,6 @@ namespace Garage2.ViewModels
 {
     public class ParkParkedVehicleViewModel
     {
-        [Key]
         [RegularExpression(@"^([A-Z]|[a-z]){3}\d{2,3}([A-Z]|[a-z]){0,1}")]
         public string RegistrationNumber { get; set; }
 
