@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Garage2.Models;
 using Garage2.Data;
+using Garage2.ViewModels;
+using Microsoft.EntityFrameworkCore;
 
 namespace Garage2.Controllers
 {
@@ -18,9 +20,10 @@ namespace Garage2.Controllers
             _context = context;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index(VehicleSummaryViewModel model)
         {
-            return View();
+            var vehicles = await _context.Contracts.Where(c => c.Vehicle.RegistrationNumber == model.RegistrationNumber).ToListAsync();
+            return View(vehicles);
         }
 
         // Get: Vehicle/Park
