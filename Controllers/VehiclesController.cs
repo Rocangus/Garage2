@@ -18,6 +18,11 @@ namespace Garage2.Controllers
             _context = context;
         }
 
+        public IActionResult Index()
+        {
+            return View();
+        }
+
         // Get: Vehicle/Park
         public IActionResult Park()
         {
