@@ -1,10 +1,8 @@
-﻿@model Garage2.Models.ParkedVehicle
+﻿@model ParkedVehicle
 
 
 @{
-
     ViewData["Title"] = "Park";
-
 }
 
 <h1>Park</h1>
@@ -16,7 +14,7 @@
 
     <div class="col-md-4">
 
-        <form asp-action="Create">
+        <form asp-action="Park">
 
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
