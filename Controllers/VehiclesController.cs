@@ -57,7 +57,7 @@ namespace Garage2.Controllers
 
         }
 
-        public async Task<IActionResult> Filter(string RegNum, int? type)
+        public async Task<IActionResult> FilterByRegNum(string RegNum, int? type)
         {
 
             var model = string.IsNullOrWhiteSpace(RegNum) ?
