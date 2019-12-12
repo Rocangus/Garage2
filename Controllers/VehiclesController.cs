@@ -57,9 +57,43 @@ namespace Garage2.Controllers
 
         }
 
-        public async Task<IActionResult> FilterByRegNum(string RegNum, int? type)
+        // GET: Vehicle/UnPark
+        public async Task<IActionResult> UnPark(string RegNum)
         {
+            if (RegNum == null)
+            {
+                return NotFound();
 
+            }
+
+            var vehicle = await _context.ParkedVehicles
+                .FirstOrDefaultAsync(m => m.RegistrationNumber == RegNum);
+
+            if (vehicle == null)
+            {
+                return NotFound();
+            }
+
+            return View(vehicle);
+
+        }
+
+        // POST: Vehicle/UnPark
+        [HttpPost, ActionName("UnPark")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UnParkConfirmed(string RegNum)
+        {
+            var vehicle = await _context.ParkedVehicles.FindAsync(RegNum);
+            _context.ParkedVehicles.Remove(vehicle);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
+
+        }
+
+        // Filter by RegNum
+        public async Task<IActionResult> Filter(string RegNum, int? type)
+        {
             var model = string.IsNullOrWhiteSpace(RegNum) ?
                 await _context.ParkedVehicles.ToListAsync() :
                 await _context.ParkedVehicles.Where(m => m.RegistrationNumber == RegNum).ToListAsync();
@@ -68,7 +102,7 @@ namespace Garage2.Controllers
                 model :
                 model.Where(m => m.Type == (VehicleType)type).ToList();
 
-            return View( model);
+            return View(model);
 
         }
 
