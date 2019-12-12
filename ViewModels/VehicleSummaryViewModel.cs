@@ -15,5 +15,8 @@ namespace Garage2.ViewModels
 
         public string Colour { get; set; }
 
+        // Currently just the date the vehicle was parked
+        public DateTime ParkingTime { get; set; }
+
     }
 }
