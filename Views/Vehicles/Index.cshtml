@@ -1,42 +1,86 @@
 ﻿@model IEnumerable<VehicleSummaryViewModel>
 @{
-    <div class="container">
-        <table>
-            <thead>
-                <tr >
 
-                    <td >
-                        Registration No
+  
+
+    <table class="table">
+
+        <thead>
+
+            <tr>
+
+                <th>
+
+                    Registration Number
+
+                </th>
+
+                <th>
+
+                    Type
+
+                </th>
+
+                <th>
+
+                    Colour
+
+                </th>
+
+                <th>
+
+                    Parking Time
+
+                </th>
+
+
+
+                <th></th>
+
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            @foreach (var item in Model)
+
+            {
+
+                <tr>
+
+                    <td>
+
+                        @Html.DisplayFor(modelItem => item.RegistrationNumber)
+
                     </td>
 
-                    <td >
-                        Vehical type
-                    </td>
-                    <td >
-                        Parking Time
+                    <td>
+
+                        @Html.DisplayFor(modelItem => item.Type)
+
                     </td>
 
-                    
+                    <td>
+
+                        @Html.DisplayFor(modelItem => item.Colour)
+
+                    </td>
+
+                  
+
+                    <td>
+
+                        @Html.DisplayFor(modelItem => item.ParkingTime)
+
+                    </td>
 
                 </tr>
-            </thead>
 
-            <tbody>
+            }
 
-                @foreach (var vehicale in Model)
-                {
-                    
-                        <tr class="row list-unstyled">
-                            <td>@vehicale.RegistrationNumber</td>
-                            <td>@vehicale.Type</td>
-                            <td>@vehicale.Colour</td>
-                            <td>@vehicale.ParkingTime</td>
-                        </tr>
-                    
-                }
+        </tbody>
 
-            </tbody>
-        </table>
-    </div>
+    </table>
 
 }

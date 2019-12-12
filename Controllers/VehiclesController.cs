@@ -72,7 +72,13 @@ namespace Garage2.Controllers
             {
                 var vehicle = new ParkedVehicle();
                 //populate all fields from viewModel
-                
+                vehicle.RegistrationNumber = viewModel.RegistrationNumber;
+                vehicle.Type = viewModel.Type;
+                vehicle.Colour = viewModel.Colour;
+                vehicle.Manufacturer = viewModel.Manufacturer;
+                vehicle.Model = viewModel.Model;
+                vehicle.NumberOfWheels = viewModel.NumberOfWheels;
+
                 _context.Add(vehicle);
                 _context.Add(new ParkingContract()
                 {
