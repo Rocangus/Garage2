@@ -4,7 +4,7 @@
     ViewData["Title"] = "Filter";
 }
 
-<h1>Filter</h1>
+    <h1>Filter By Registration Number </h1>
 
 <form asp-action="Filter">
 
@@ -27,4 +27,92 @@
     </div>
 
 </form>
+
+<table class="table">
+
+    <thead>
+
+        <tr>
+
+            <th>
+
+                Registration Number
+
+            </th>
+
+            <th>
+
+                Type
+
+            </th>
+
+            <th>
+
+                Manufacturer
+
+            </th>
+
+            <th>
+
+                Colour
+
+            </th>
+
+            <th>
+
+                Model
+
+            </th>
+
+            <th></th>
+
+        </tr>
+
+    </thead>
+
+    <tbody>
+
+        @foreach (var item in Model)
+
+        {
+
+        <tr>
+
+            <td>
+
+                @Html.DisplayFor(modelItem => item.RegistrationNumber)
+
+            </td>
+
+            <td>
+
+                @Html.DisplayFor(modelItem => item.Type)
+
+            </td>
+
+            <td>
+
+                @Html.DisplayFor(modelItem => item.Manufacturer)
+
+            </td>
+
+            <td>
+
+                @Html.DisplayFor(modelItem => item.Colour)
+
+            </td>
+
+            <td>
+
+                @Html.DisplayFor(modelItem => item.Model)
+
+            </td>
+
+        </tr>
+
+        }
+
+    </tbody>
+
+</table>
 

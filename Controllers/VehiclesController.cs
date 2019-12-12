@@ -102,7 +102,7 @@ namespace Garage2.Controllers
                 model :
                 model.Where(m => m.Type == (VehicleType)type).ToList();
 
-            return View(nameof(Index), model);
+            return View( model);
 
         }
 
