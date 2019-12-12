@@ -1,43 +1,90 @@
 ﻿@model IEnumerable<VehicleSummaryViewModel>
 @{
-    <div class="container">
-        <table>
-            <thead>
-                <tr class="" >
 
-                    <td >
-                        Registration No
-                    </td>
+  
+    <h1>Garage index</h1>
+    <table class="table">
 
-                    <td >
-                        Vehical type
-                    </td>
-                    <td >
-                        Color
-                    </td>
-                    <td >
-                        Parking Time
-                    </td>
+        <thead>
+
+            <tr>
+
+                <th>
+
+                    Registration Number
+
+                </th>
+
+                <th>
+
+                    Type
+
+                </th>
+
+                <th>
+
+                    Colour
+
+                </th>
+
+                <th>
+
+                    Parking Time
+
+                </th>
+
+
+                    
+
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            @foreach (var item in Model)
+
+            {
+
+            <tr>
+
+                <td>
+
+                    @Html.DisplayFor(modelItem => item.RegistrationNumber)
+
+                </td>
+
+                <td>
+
+                    @Html.DisplayFor(modelItem => item.Type)
+
+                </td>
+
+                <td>
+
+                    @Html.DisplayFor(modelItem => item.Colour)
+
+                </td>
 
 
 
-                </tr>
-            </thead>
+                <td>
 
-            <tbody>
+                    @item.ParkingTime.ToString("d")
 
-                @foreach (var vehicale in Model)
-                {
-                        <tr>
-                            <td>@vehicale.RegistrationNumber</td>
-                            <td>@vehicale.Type</td>
-                            <td>@vehicale.Colour</td>
-                            <td>@vehicale.ParkingTime</td>
-                        </tr> 
-                }
+                </td>
 
-            </tbody>
-        </table>
-    </div>
+                <td>
+                    <a asp-action="UnPark" asp-route-regNum="@item.RegistrationNumber">UnPark</a> 
+
+                </td>
+
+            </tr>
+
+            }
+
+        </tbody>
+
+    </table>
 
 }

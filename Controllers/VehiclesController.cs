@@ -106,7 +106,13 @@ namespace Garage2.Controllers
             {
                 var vehicle = new ParkedVehicle();
                 //populate all fields from viewModel
-                
+                vehicle.RegistrationNumber = viewModel.RegistrationNumber;
+                vehicle.Type = viewModel.Type;
+                vehicle.Colour = viewModel.Colour;
+                vehicle.Manufacturer = viewModel.Manufacturer;
+                vehicle.Model = viewModel.Model;
+                vehicle.NumberOfWheels = viewModel.NumberOfWheels;
+
                 _context.Add(vehicle);
                 _context.Add(new ParkingContract()
                 {
@@ -148,11 +154,25 @@ namespace Garage2.Controllers
         public async Task<IActionResult> UnParkConfirmed(string RegNum)
         {
             var vehicle = await _context.ParkedVehicles.FindAsync(RegNum);
-            _context.ParkedVehicles.Remove(vehicle);
-            await _context.SaveChangesAsync();
+            var contracts =  await _context.Contracts.Where(c => c.Vehicle == vehicle).ToListAsync();
+            if (contracts != null && contracts.Count == 1)
+            {
+                _context.Contracts.Remove(contracts[0]);
+                _context.ParkedVehicles.Remove(vehicle);
+                await _context.SaveChangesAsync();
+            }
+            
 
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Index), new { Vehicle = vehicle, Contract = contracts });
+
         }
+
+        public IActionResult ParkingReceipt(ParkedVehicle Vehicle, ParkingContract Contract)
+        {
+            var model = new Tuple<ParkedVehicle, ParkingContract,DateTime>(Vehicle, Contract, DateTime.Today);
+
+            return View(model);
+        } 
 
         // Filter by RegNum
         public async Task<IActionResult> Filter(string RegNum, int? type)
