@@ -36,16 +36,24 @@ namespace Garage2.Controllers
         // Post: Vehicle/Park
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Park( ParkedVehicle vehicle)
+        public async Task<IActionResult> Park( ParkParkedVehicleViewModel viewModel)
         {
             if (ModelState.IsValid)
             {
+                var vehicle = new ParkedVehicle();
+                //populate all fields from viewModel
+                
                 _context.Add(vehicle);
+                _context.Add(new ParkingContract()
+                {
+                    Vehicle = vehicle,
+                    ParkingDate=DateTime.Today
+                });
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
 
-            return View(vehicle);
+            return View();
 
         }
 
