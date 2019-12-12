@@ -9,8 +9,6 @@ namespace Garage2.ViewModels
 {
     public class ParkedVehicleVewModel
     {
-        public class ParkedVehicle
-        {
             public string RegistrationNumber { get; set; }
 
             public VehicleType Type { get; set; }
@@ -24,6 +22,5 @@ namespace Garage2.ViewModels
             public int NumberOfWheels { get; set; }
 
             public DateTime ParkingDate { get; set; }
-        }
     }
 }
