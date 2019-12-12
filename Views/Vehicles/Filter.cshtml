@@ -14,7 +14,9 @@
 
         <div class="input-group-append">
 
-            <select name="type" asp-items="@Html.GetEnumSelectList<VehicleType>()" class="form-control"></select>
+            <select name="type" asp-items="@Html.GetEnumSelectList<VehicleType>()" class="form-control">
+                <option selected="selected" value=""> Select</option>
+            </select>
 
         </div>
 
