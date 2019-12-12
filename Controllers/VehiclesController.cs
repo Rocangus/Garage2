@@ -20,6 +20,42 @@ namespace Garage2.Controllers
             _context = context;
         }
 
+
+
+
+        // GET: Vehicle/Details
+        public async Task<IActionResult> Details(string RegNum)
+        {
+            RegNum = "PAY276";
+
+
+            if (RegNum == null)
+            {
+                return NotFound();
+
+            }
+
+            var models = await _context.ParkedVehicles
+                .FirstOrDefaultAsync(m => m.RegistrationNumber == RegNum);
+
+            if (models == null)
+            {
+                return NotFound();
+            }
+
+            var T = new VehicaleSummaryDetailsViewModel(models);
+            return View(T);
+
+        }
+
+
+    
+
+
+
+        //public IActionResult Details()
+        //{
+        //}
         public async Task<IActionResult> Index()
         {
             var contracts = await _context.Contracts.ToListAsync();
@@ -28,7 +64,6 @@ namespace Garage2.Controllers
 
             foreach (ParkedVehicle vehicle in parkvehecle)
             {
-
                 var parkingDate = contracts.Where(c => c.Vehicle.RegistrationNumber
                                                     == vehicle.RegistrationNumber).ToList();
                 if (parkingDate.Count() != 1)
@@ -54,7 +89,6 @@ namespace Garage2.Controllers
             model.Type = vehicle.Type;
             return model;
         }
-    
 
         // Get: Vehicle/Park
         public IActionResult Park()
@@ -118,7 +152,6 @@ namespace Garage2.Controllers
             await _context.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
-
         }
 
         // Filter by RegNum
@@ -135,7 +168,6 @@ namespace Garage2.Controllers
             return View( model);
 
         }
-
 
     }
 }

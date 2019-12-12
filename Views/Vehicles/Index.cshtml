@@ -3,7 +3,7 @@
     <div class="container">
         <table>
             <thead>
-                <tr >
+                <tr class="" >
 
                     <td >
                         Registration No
@@ -13,10 +13,13 @@
                         Vehical type
                     </td>
                     <td >
+                        Color
+                    </td>
+                    <td >
                         Parking Time
                     </td>
 
-                    
+
 
                 </tr>
             </thead>
@@ -25,14 +28,12 @@
 
                 @foreach (var vehicale in Model)
                 {
-                    
-                        <tr class="row list-unstyled">
+                        <tr>
                             <td>@vehicale.RegistrationNumber</td>
                             <td>@vehicale.Type</td>
                             <td>@vehicale.Colour</td>
                             <td>@vehicale.ParkingTime</td>
-                        </tr>
-                    
+                        </tr> 
                 }
 
             </tbody>
