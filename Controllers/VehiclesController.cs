@@ -120,8 +120,14 @@ namespace Garage2.Controllers
         public async Task<IActionResult> UnParkConfirmed(string RegNum)
         {
             var vehicle = await _context.ParkedVehicles.FindAsync(RegNum);
-            _context.ParkedVehicles.Remove(vehicle);
-            await _context.SaveChangesAsync();
+            var contracts =  await _context.Contracts.Where(c => c.Vehicle == vehicle).ToListAsync();
+            if (contracts != null && contracts.Count == 1)
+            {
+                _context.Contracts.Remove(contracts[0]);
+                _context.ParkedVehicles.Remove(vehicle);
+                await _context.SaveChangesAsync();
+            }
+            
 
             return RedirectToAction(nameof(Index));
 
