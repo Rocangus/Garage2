@@ -22,9 +22,39 @@ namespace Garage2.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var vehicles = await _context.Contracts.ToListAsync();
-            return View(vehicles);
+            var contracts = await _context.Contracts.ToListAsync();
+            var parkvehecle = await _context.ParkedVehicles.ToListAsync();
+            var models = new List<VehicleSummaryViewModel>();
+
+            foreach (ParkedVehicle vehicle in parkvehecle)
+            {
+
+                var parkingDate = contracts.Where(c => c.Vehicle.RegistrationNumber
+                                                    == vehicle.RegistrationNumber).ToList();
+                if (parkingDate.Count() != 1)
+                {
+                    //Something has gone wrong
+                    throw new ApplicationException("ParkingContract for a ParkedVehicle not found");
+                }
+
+                VehicleSummaryViewModel model = CreateSummaryViewModel(vehicle, parkingDate);
+
+                models.Add(model);
+            }
+
+            return View(models);
         }
+
+        private static VehicleSummaryViewModel CreateSummaryViewModel(ParkedVehicle vehicle, List<ParkingContract> parkingDate)
+        {
+            var model = new VehicleSummaryViewModel();
+            model.Colour = vehicle.Colour;
+            model.RegistrationNumber = vehicle.RegistrationNumber;
+            model.ParkingTime = parkingDate[0].ParkingDate;
+            model.Type = vehicle.Type;
+            return model;
+        }
+    
 
         // Get: Vehicle/Park
         public IActionResult Park()
