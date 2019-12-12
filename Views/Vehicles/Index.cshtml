@@ -47,35 +47,40 @@
 
             {
 
-                <tr>
+            <tr>
 
-                    <td>
+                <td>
 
-                        @Html.DisplayFor(modelItem => item.RegistrationNumber)
+                    @Html.DisplayFor(modelItem => item.RegistrationNumber)
 
-                    </td>
+                </td>
 
-                    <td>
+                <td>
 
-                        @Html.DisplayFor(modelItem => item.Type)
+                    @Html.DisplayFor(modelItem => item.Type)
 
-                    </td>
+                </td>
 
-                    <td>
+                <td>
 
-                        @Html.DisplayFor(modelItem => item.Colour)
+                    @Html.DisplayFor(modelItem => item.Colour)
 
-                    </td>
+                </td>
 
-                  
 
-                    <td>
 
-                        @Html.DisplayFor(modelItem => item.ParkingTime)
+                <td>
 
-                    </td>
+                    @Html.DisplayFor(modelItem => item.ParkingTime)
 
-                </tr>
+                </td>
+
+                <td>
+                    <a asp-action="UnPark" asp-route-id="@item.RegistrationNumber">UnPark</a> 
+
+                </td>
+
+            </tr>
 
             }
 
