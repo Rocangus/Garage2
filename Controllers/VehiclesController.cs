@@ -129,9 +129,16 @@ namespace Garage2.Controllers
             }
             
 
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Index), new { Vehicle = vehicle, Contract = contracts });
 
         }
+
+        public IActionResult ParkingReceipt(ParkedVehicle Vehicle, ParkingContract Contract)
+        {
+            var model = new Tuple<ParkedVehicle, ParkingContract,DateTime>(Vehicle, Contract, DateTime.Today);
+
+            return View(model);
+        } 
 
         // Filter by RegNum
         public async Task<IActionResult> Filter(string RegNum, int? type)
