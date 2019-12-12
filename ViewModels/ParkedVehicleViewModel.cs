@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Garage2.ViewModels
 {
-    public class ParkedVehicleVewModel
+    public class ParkedVehicleViewModel
     {
             public string RegistrationNumber { get; set; }
 

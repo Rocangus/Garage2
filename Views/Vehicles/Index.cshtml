@@ -1,44 +1,42 @@
-﻿
+﻿@model IEnumerable<VehicleSummaryViewModel>
 @{
-
     <div class="container">
-        <div class="row">
+        <table>
+            <thead>
+                <tr >
 
-            <dv class="col-md-3">
-                <label class=""> Registation No :</label>
-            </dv>
+                    <td >
+                        Registration No
+                    </td>
 
-            <dv class="col-md-3">
-                <label class=""> Vehical type :</label>
-            </dv>
-            <dv class="col-md-3">
-                <label class=""> Parking Time :</label>
-            </dv>
+                    <td >
+                        Vehical type
+                    </td>
+                    <td >
+                        Parking Time
+                    </td>
 
-            <dv class="col-md-3">
-                <label class=""> Total Cost  :</label>
-            </dv>
+                    
 
-        </div>
+                </tr>
+            </thead>
 
-        <div class="row">
-            <dv class="col-md-3">
-                <label class=""> 444</label>
-            </dv>
+            <tbody>
 
-            <dv class="col-md-3">
-                <label class=""> 888 :</label>
-            </dv>
-            <dv class="col-md-3">
-                <label class=""> 44 :</label>
-            </dv>
+                @foreach (var vehicale in Model)
+                {
+                    
+                        <tr class="row list-unstyled">
+                            <td>@vehicale.RegistrationNumber</td>
+                            <td>@vehicale.Type</td>
+                            <td>@vehicale.Colour</td>
+                            <td>@vehicale.ParkingTime</td>
+                        </tr>
+                    
+                }
 
-            <dv class="col-md-3">
-                <label class=""> T55</label>
-            </dv>
-
-        </div>
-
+            </tbody>
+        </table>
     </div>
 
 }
