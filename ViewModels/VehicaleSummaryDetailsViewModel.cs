@@ -27,7 +27,7 @@ namespace Garage2.ViewModels
 
         public int NumberOfWheels { get; set; }
 
-        public DateTime ParkingDate { get; set; }
+        public TimeSpan ParkingTime { get; set; }
 
     }
 }
