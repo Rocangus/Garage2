@@ -3,6 +3,7 @@
 
   
     <h1>Garage index</h1>
+
     <table class="table">
 
         <thead>
@@ -46,44 +47,53 @@
 
             {
 
-            <tr>
+                <tr>
 
-                <td>
+                    <td>
 
-                    @Html.DisplayFor(modelItem => item.RegistrationNumber)
+                        @Html.DisplayFor(modelItem => item.RegistrationNumber)
 
-                </td>
+                    </td>
 
-                <td>
+                    <td>
 
-                    @Html.DisplayFor(modelItem => item.Type)
+                        @Html.DisplayFor(modelItem => item.Type)
 
-                </td>
+                    </td>
 
-                <td>
+                    <td>
 
-                    @Html.DisplayFor(modelItem => item.Colour)
+                        @Html.DisplayFor(modelItem => item.Colour)
 
-                </td>
+                    </td>
 
 
 
-                <td>
+                    <td>
 
-                    @item.ParkingTime.ToString("d")
+                        @item.ParkingTime.ToString("d")
 
-                </td>
+                    </td>
 
-                <td>
-                    <a asp-action="UnPark" asp-route-regNum="@item.RegistrationNumber">UnPark</a> 
+                    <td>
+                        <a asp-action="UnPark" asp-route-regNum="@item.RegistrationNumber">UnPark</a>
 
-                </td>
+                    </td>
 
-            </tr>
+                    <td>
+                        <a asp-action="Details" asp-route-regNum="@item.RegistrationNumber">Details</a>
+
+                    </td>
+
+                </tr>
+
+
+
 
             }
 
         </tbody>
+
 
     </table>
 

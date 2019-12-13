@@ -26,7 +26,7 @@ namespace Garage2.Controllers
         // GET: Vehicle/Details
         public async Task<IActionResult> Details(string RegNum)
         {
-            RegNum = "PAY276";
+            //RegNum = "PAY276";
 
 
             if (RegNum == null)
@@ -43,13 +43,15 @@ namespace Garage2.Controllers
                 return NotFound();
             }
 
-            var T = new VehicaleSummaryDetailsViewModel(models);
-            return View(T);
+            var ModelSum = new VehicaleSummaryDetailsViewModel(models);
+            ModelSum.Colour = models.Colour;
+            ModelSum.RegistrationNumber = models.RegistrationNumber;
+            ModelSum.Manufacturer = models.Manufacturer;
+            ModelSum.Model = models.Model;
+           
+            return View(ModelSum);
 
         }
-
-
-    
 
 
 

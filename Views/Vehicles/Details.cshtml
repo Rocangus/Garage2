@@ -1,42 +1,61 @@
 ﻿@model VehicaleSummaryDetailsViewModel
-
 @{
-    <div class="container">
-        <table>
-            <thead>
-                <tr class="">
-
-                    <td>
-                        Registration No
-                    </td>
-
-                    <td>
-                        Vehical type
-                    </td>
-                    <td>
-                        Color
-                    </td>
-                    <td>
-                        Parking Time
-                    </td>
+    <h1>Garage index</h1>
 
 
+<div class="container">
+    <table>
+        <thead>
+            <tr class="">
 
-                </tr>
-            </thead>
+                <td>
+                    Registration No
+                </td>
 
-            <tbody>
-                <tr>
-                    <td>@Model.RegistrationNumber</td>
-                    <td>@Model.Type</td>
-                    <td>@Model.Colour</td>
-                    <td>@Model.Model</td>
+                <td>
+                    Vehical type
+                </td>
+                <td>
+                    Color
+                </td>
+                <td>
+                    Model
+                </td>
+                <td>
+                    Manufacture By
+                </td>
+                <td>
+                    Parking Time
+                </td>
 
-                </tr>
+            </tr>
+        </thead>
 
-            </tbody>
-        </table>
-    </div>
+        <tbody>
+            <tr>
+
+                
+                <td>@Model.RegistrationNumber</td>
+                <td>@Model.Type</td>
+                <td>@Model.Colour</td>
+                <td>@Model.Model</td>
+                <td>@Model.Manufacturer</td>
+                <td>@Model.ParkingDate</td>
+
+
+            </tr>
+
+            <tr>
+                
+                <td>
+                    <a asp-action="Index">Back to List</a>
+                </td>
+               
+            </tr>
+
+        </tbody>
+    </table>
+</div>
 
 }
 
