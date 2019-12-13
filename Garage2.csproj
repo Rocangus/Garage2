@@ -7,6 +7,14 @@
   <ItemGroup>
     <Compile Remove="Migrations\20191211154023_DataAddTest.cs" />
     <Compile Remove="Migrations\20191211154023_DataAddTest.Designer.cs" />
+    <Compile Remove="Migrations\20191212081019_AddBaseData.cs" />
+    <Compile Remove="Migrations\20191212081019_AddBaseData.Designer.cs" />
+    <Compile Remove="Migrations\20191213110023_NewTimeForPAY276.cs" />
+    <Compile Remove="Migrations\20191213110023_NewTimeForPAY276.Designer.cs" />
+    <Compile Remove="Migrations\20191213141745_AdditionalData.cs" />
+    <Compile Remove="Migrations\20191213141745_AdditionalData.Designer.cs" />
+    <Compile Remove="Migrations\20191213152707_ChangedVehicle3Date.cs" />
+    <Compile Remove="Migrations\20191213152707_ChangedVehicle3Date.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

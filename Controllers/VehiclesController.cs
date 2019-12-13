@@ -16,7 +16,7 @@ namespace Garage2.Controllers
     public class VehiclesController:Controller
     {
         private GarageContext _context;
-        private float minutePrice;
+        private float minutePrice = 0.05f;
 
         public VehiclesController(GarageContext context)
         {
