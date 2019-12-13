@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Data;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -20,7 +21,11 @@ namespace Garage2.Controllers
             _context = context;
         }
 
-
+        public string regnum { get; set; }
+        public string Type { get; set; }
+        public string Manufacturere { get; set; }
+        public string color { get; set; }
+        public string model { get; set; }
 
 
         // GET: Vehicle/Details
@@ -47,11 +52,6 @@ namespace Garage2.Controllers
             return View(T);
 
         }
-
-
-    
-
-
 
         //public IActionResult Details()
         //{
@@ -162,7 +162,6 @@ namespace Garage2.Controllers
                 await _context.SaveChangesAsync();
             }
             
-
             return RedirectToAction(nameof(Index), new { Vehicle = vehicle, Contract = contracts });
 
         }
@@ -170,7 +169,6 @@ namespace Garage2.Controllers
         public IActionResult ParkingReceipt(ParkedVehicle Vehicle, ParkingContract Contract)
         {
             var model = new Tuple<ParkedVehicle, ParkingContract,DateTime>(Vehicle, Contract, DateTime.Today);
-
             return View(model);
         } 
 
@@ -185,9 +183,60 @@ namespace Garage2.Controllers
                 model :
                 model.Where(m => m.Type == (VehicleType)type).ToList();
 
-            return View( model);
+            return View(model);
 
         }
+
+        public async Task<IActionResult> Sort(string sortOrder)
+        {
+            ViewBag.TypeSortParm = String.IsNullOrEmpty(sortOrder) ? "type_desc" : "";
+            ViewBag.RegistrationNumberSortParm = sortOrder == "RegistrationNumber" ? "RegistrationNumber_desc" : "RegistrationNumber";
+            ViewBag.ColourSortParm = sortOrder == "Colour" ? "Colour_desc" : "Colour";
+            ViewBag.ParkingTimeSortParm = sortOrder == "ParkingTime" ? "ParkingTime_desc" : "ParkingTime";
+
+            //var model = new VehicleSummaryViewModel();
+            //model.Colour = Parkvehicle.Colour;
+            //model.RegistrationNumber = Parkvehicle.RegistrationNumber;
+            //model.ParkingTime = parkingDate[0].ParkingDate;
+            //model.Type = Parkvehicle.Type;
+           
+            var vehicle = from s in _context.ParkedVehicles
+                          select s;
+
+            switch (sortOrder)
+            {
+                case "type_desc":
+                    vehicle = vehicle.OrderByDescending(s => s.Type);
+                    break;
+                case "RegistrationNumber":
+                    vehicle = vehicle.OrderBy(s => s.RegistrationNumber);
+                    break;
+                case "RegistrationNumber_desc":
+                    vehicle = vehicle.OrderByDescending(s => s.RegistrationNumber);
+                    break;
+                case "ParkingTime":
+                    //vehicle = vehicle.OrderBy(s => s.ParkingTime);
+                    break;
+                case "ParkingTime_desc":
+                    //vehicle = vehicle.OrderByDescending(s => s.ParkingTime);
+                    break;
+                case "Colour":
+                    vehicle = vehicle.OrderBy(s => s.Colour);
+                    break;
+                case "Colour_desc":
+                    vehicle = vehicle.OrderByDescending(s => s.Colour);
+                    break;
+                default:
+                    vehicle = vehicle.OrderBy(s => s.Type);
+                    break;
+            }
+            return View( vehicle.ToList());
+
+     
+
+        }
+
+
 
     }
 }

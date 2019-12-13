@@ -1,72 +1,30 @@
 ﻿@model IEnumerable<ParkedVehicle>
-
 @{
     ViewData["Title"] = "Filter";
 }
 
-    <h1>Filter By Registration Number </h1>
-
-<form asp-action="Filter">
-
-    <div class="input-group mb-3">
-
-        <input type="text" name="RegNum" class="form-control" placeholder="Search on title" />
-
-        <div class="input-group-append">
-
-            <select name="type" asp-items="@Html.GetEnumSelectList<VehicleType>()" class="form-control">
-                <option selected="selected" value=""> Select</option>
-            </select>
-
-        </div>
-
-        <div class="input-group-append">
-
-            <button type="submit" class="btn btn-primary"><i class="fa fa-search">&emsp;Search</i></button>
-
-        </div>
-
-    </div>
-
-</form>
+<h1>Filter</h1>
 
 <table class="table">
-
     <thead>
-
         <tr>
-
             <th>
-
-                Registration Number
-
+                @Html.ActionLink("Registration Number", "Sort", new { sortOrder = ViewBag.RegistrationNumberSortParm })
+            </th>
+            <th>
+                @Html.ActionLink("Type", "Sort", new { sortOrder = ViewBag.TypeSortParm })
             </th>
 
             <th>
-
-                Type
-
+                @Html.ActionLink("Colour", "Sort", new { sortOrder = ViewBag.ColourSortParm })
             </th>
 
             <th>
-
-                Manufacturer
-
+                @Html.ActionLink("Manufacturer", "Sort", new { sortOrder = ViewBag.ManufacturerSortParm })
             </th>
-
             <th>
-
-                Colour
-
+                @Html.ActionLink("Model", "Sort", new { sortOrder = ViewBag.ModelSortParm })
             </th>
-
-            <th>
-
-                Model
-
-            </th>
-
-            <th></th>
 
         </tr>
 
@@ -77,44 +35,23 @@
         @foreach (var item in Model)
 
         {
-
-        <tr>
-
-            <td>
-
-                @Html.DisplayFor(modelItem => item.RegistrationNumber)
-
-            </td>
-
-            <td>
-
-                @Html.DisplayFor(modelItem => item.Type)
-
-            </td>
-
-            <td>
-
-                @Html.DisplayFor(modelItem => item.Manufacturer)
-
-            </td>
-
-            <td>
-
-                @Html.DisplayFor(modelItem => item.Colour)
-
-            </td>
-
-            <td>
-
-                @Html.DisplayFor(modelItem => item.Model)
-
-            </td>
-
-        </tr>
-
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.RegistrationNumber)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Type)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Colour)
+                </td>
+                
+                <td>
+                    <a asp-action="UnPark" asp-route-regNum="@item.RegistrationNumber">UnPark</a>
+                </td>
+            </tr>
         }
 
     </tbody>
 
 </table>
-
