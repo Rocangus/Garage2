@@ -3,13 +3,13 @@
     ViewData["Title"] = "UnPark";
 }
 
-<h1>UnPark</h1>
+    <h1>UnPark Vehicle</h1>
 
-<h3>Are you sure you want to unpark this?</h3>
+<h3>Are you sure you want to unpark this Vehicle?</h3>
 
 <div>
 
-    <h4>UnPark Vehicle</h4>
+    @*<h4>UnPark Vehicle</h4>*@
 
     <hr />
 
@@ -65,11 +65,11 @@
 
     </dl>
 
-    <form asp-action="UnPark">
+    <form asp-action="UnPark" asp-route-RegNum="@Model.RegistrationNumber">
 
-        <input type="hidden" asp-for="RegistrationNumber" />
+        <input type="hidden" asp-for="RegistrationNumber"  />
 
-        <input type="submit" value="@Model.RegistrationNumber" class="btn btn-danger" name="RegNum"/> |
+        <input type="submit" value="Unpark" class="btn btn-danger"/> |
 
         <a asp-action="Index">Back to List</a>
 

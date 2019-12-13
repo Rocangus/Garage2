@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Data;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -8,6 +9,7 @@ using Garage2.Models;
 using Garage2.Data;
 using Garage2.ViewModels;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 namespace Garage2.Controllers
 {
@@ -20,7 +22,11 @@ namespace Garage2.Controllers
             _context = context;
         }
 
-
+        public string regnum { get; set; }
+        public string Type { get; set; }
+        public string Manufacturere { get; set; }
+        public string color { get; set; }
+        public string model { get; set; }
 
 
         // GET: Vehicle/Details
@@ -66,9 +72,9 @@ namespace Garage2.Controllers
 
             foreach (ParkedVehicle vehicle in parkvehecle)
             {
-                var parkingDate = contracts.Where(c => c.Vehicle.RegistrationNumber
-                                                    == vehicle.RegistrationNumber).ToList();
-                if (parkingDate.Count() != 1)
+                var parkingDate = contracts.FirstOrDefault(c => c.Vehicle.RegistrationNumber
+                                                    == vehicle.RegistrationNumber);
+                if (parkingDate == null)
                 {
                     //Something has gone wrong
                     throw new ApplicationException("ParkingContract for a ParkedVehicle not found");
@@ -82,12 +88,12 @@ namespace Garage2.Controllers
             return View(models);
         }
 
-        private static VehicleSummaryViewModel CreateSummaryViewModel(ParkedVehicle vehicle, List<ParkingContract> parkingDate)
+        private static VehicleSummaryViewModel CreateSummaryViewModel(ParkedVehicle vehicle, ParkingContract parkingDate)
         {
             var model = new VehicleSummaryViewModel();
             model.Colour = vehicle.Colour;
             model.RegistrationNumber = vehicle.RegistrationNumber;
-            model.ParkingTime = parkingDate[0].ParkingDate;
+            model.ParkingTime = parkingDate.ParkingDate;
             model.Type = vehicle.Type;
             return model;
         }
@@ -156,22 +162,34 @@ namespace Garage2.Controllers
         public async Task<IActionResult> UnParkConfirmed(string RegNum)
         {
             var vehicle = await _context.ParkedVehicles.FindAsync(RegNum);
-            var contracts =  await _context.Contracts.Where(c => c.Vehicle == vehicle).ToListAsync();
-            if (contracts != null && contracts.Count == 1)
+            var contract =  await _context.Contracts.FirstOrDefaultAsync(c => c.Vehicle == vehicle);
+            if (contract != null && contract != null)
             {
-                _context.Contracts.Remove(contracts[0]);
+                _context.Contracts.Remove(contract);
                 _context.ParkedVehicles.Remove(vehicle);
                 await _context.SaveChangesAsync();
             }
-            
 
-            return RedirectToAction(nameof(Index), new { Vehicle = vehicle, Contract = contracts });
+            TempData["vehicle"] = JsonConvert.SerializeObject(vehicle);
+            TempData["contract"] = JsonConvert.SerializeObject(contract);
+            TempData.Keep();
+            return RedirectToAction(nameof(ParkingReceipt));
 
         }
 
-        public IActionResult ParkingReceipt(ParkedVehicle Vehicle, ParkingContract Contract)
+        public IActionResult ParkingReceipt()
         {
-            var model = new Tuple<ParkedVehicle, ParkingContract,DateTime>(Vehicle, Contract, DateTime.Today);
+            var vehicleString = TempData["vehicle"] as string;
+            var contractString = TempData["contract"] as string;
+            var vehicle = JsonConvert.DeserializeObject<ParkedVehicle>(vehicleString) as ParkedVehicle;
+            var contract = JsonConvert.DeserializeObject<ParkingContract>(contractString) as ParkingContract;
+            if (contract == null || vehicle == null)
+            {
+                throw new Exception("JsonConvert failed to convert TempData");
+            }
+            var currentTime = DateTime.Now;
+            var parkingDuration = currentTime - contract.ParkingDate;
+            var model = new Tuple<ParkedVehicle, ParkingContract,DateTime, TimeSpan>(vehicle, contract, currentTime, parkingDuration);
 
             return View(model);
         } 
@@ -187,9 +205,60 @@ namespace Garage2.Controllers
                 model :
                 model.Where(m => m.Type == (VehicleType)type).ToList();
 
-            return View( model);
+            return View(model);
 
         }
+
+        public async Task<IActionResult> Sort(string sortOrder)
+        {
+            ViewBag.TypeSortParm = String.IsNullOrEmpty(sortOrder) ? "type_desc" : "";
+            ViewBag.RegistrationNumberSortParm = sortOrder == "RegistrationNumber" ? "RegistrationNumber_desc" : "RegistrationNumber";
+            ViewBag.ColourSortParm = sortOrder == "Colour" ? "Colour_desc" : "Colour";
+            ViewBag.ParkingTimeSortParm = sortOrder == "ParkingTime" ? "ParkingTime_desc" : "ParkingTime";
+
+            //var model = new VehicleSummaryViewModel();
+            //model.Colour = Parkvehicle.Colour;
+            //model.RegistrationNumber = Parkvehicle.RegistrationNumber;
+            //model.ParkingTime = parkingDate[0].ParkingDate;
+            //model.Type = Parkvehicle.Type;
+           
+            var vehicle = from s in _context.ParkedVehicles
+                          select s;
+
+            switch (sortOrder)
+            {
+                case "type_desc":
+                    vehicle = vehicle.OrderByDescending(s => s.Type);
+                    break;
+                case "RegistrationNumber":
+                    vehicle = vehicle.OrderBy(s => s.RegistrationNumber);
+                    break;
+                case "RegistrationNumber_desc":
+                    vehicle = vehicle.OrderByDescending(s => s.RegistrationNumber);
+                    break;
+                case "ParkingTime":
+                    //vehicle = vehicle.OrderBy(s => s.ParkingTime);
+                    break;
+                case "ParkingTime_desc":
+                    //vehicle = vehicle.OrderByDescending(s => s.ParkingTime);
+                    break;
+                case "Colour":
+                    vehicle = vehicle.OrderBy(s => s.Colour);
+                    break;
+                case "Colour_desc":
+                    vehicle = vehicle.OrderByDescending(s => s.Colour);
+                    break;
+                default:
+                    vehicle = vehicle.OrderBy(s => s.Type);
+                    break;
+            }
+            return View( vehicle.ToList());
+
+     
+
+        }
+
+
 
     }
 }

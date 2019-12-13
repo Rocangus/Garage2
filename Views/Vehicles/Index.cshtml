@@ -1,41 +1,52 @@
 ﻿@model IEnumerable<VehicleSummaryViewModel>
 @{
 
-  
     <h1>Garage index</h1>
 
+    <form asp-action="Filter" >
+
+        <div class="input-group mb-3">
+
+            <input type="text" name="RegNum" class="form-control" placeholder="Search on title" />
+
+            <div class="input-group-append">
+
+                <select name="type" asp-items="@Html.GetEnumSelectList<VehicleType>()" class="form-control">
+                    <option selected="selected" value=""> Select</option>
+                </select>
+
+            </div>
+
+            <div class="input-group-append">
+
+                <button type="submit" class="btn btn-primary"><i class="fa fa-search">&emsp;Search</i></button>
+
+            </div>
+
+        </div>
+
+    </form>
+
     <table class="table">
-
         <thead>
-
             <tr>
-
                 <th>
-
-                    Registration Number
-
+                    @Html.ActionLink("Registration Number", "Sort", new { sortOrder = ViewBag.RegistrationNumberSortParm })
+                </th>
+                <th>
+                    @Html.ActionLink("Type", "Sort", new { sortOrder = ViewBag.TypeSortParm })
                 </th>
 
                 <th>
-
-                    Type
-
+                    @Html.ActionLink("Colour", "Sort", new { sortOrder = ViewBag.ColourSortParm })
                 </th>
 
                 <th>
-
-                    Colour
-
+                    @Html.ActionLink("Manufacturer", "Sort", new { sortOrder = ViewBag.ManufacturerSortParm })
                 </th>
-
                 <th>
-
-                    Parking Time
-
+                    @Html.ActionLink("Model", "Sort", new { sortOrder = ViewBag.ModelSortParm })
                 </th>
-
-
-                    
 
             </tr>
 
@@ -46,6 +57,23 @@
             @foreach (var item in Model)
 
             {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.RegistrationNumber)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Type)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Colour)
+                    </td>
+                    <td>
+                        @item.ParkingTime.ToString("d")
+                    </td>
+                    <td>
+                        <a asp-action="UnPark" asp-route-regNum="@item.RegistrationNumber">UnPark</a>
+                    </td>
+                </tr>
 
                 <tr>
 
