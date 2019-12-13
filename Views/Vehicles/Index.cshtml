@@ -3,17 +3,15 @@
 
     <h1>Garage index</h1>
 
-    <form asp-action="Filter" >
+    <form asp-action="Filter">
 
         <div class="input-group mb-3">
 
-            <input type="text" name="RegNum" class="form-control" placeholder="Search on title" />
+            <input type="text" name="title" class="form-control" placeholder="Search on title" />
 
             <div class="input-group-append">
 
-                <select name="type" asp-items="@Html.GetEnumSelectList<VehicleType>()" class="form-control">
-                    <option selected="selected" value=""> Select</option>
-                </select>
+                <select name="genre" asp-items="@Html.GetEnumSelectList<VehicleType>()" class="form-control"></select>
 
             </div>
 
@@ -41,9 +39,9 @@
                     @Html.ActionLink("Colour", "Sort", new { sortOrder = ViewBag.ColourSortParm })
                 </th>
 
-                <th>
-                    @Html.ActionLink("Manufacturer", "Sort", new { sortOrder = ViewBag.ManufacturerSortParm })
-                </th>
+                @*<th>
+                        @Html.ActionLink("ParkingTime", "Sort", new { sortOrder = ViewBag.ViewBag.ParkingTimeSortParm })
+                    </th>*@
                 <th>
                     @Html.ActionLink("Model", "Sort", new { sortOrder = ViewBag.ModelSortParm })
                 </th>
