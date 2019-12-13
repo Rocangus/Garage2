@@ -34,20 +34,23 @@ namespace Garage2.Controllers
 
             }
 
-            var models = await _context.ParkedVehicles
-                .FirstOrDefaultAsync(m => m.RegistrationNumber == RegNum);
+            var vehicle = await _context.ParkedVehicles
+                .FirstOrDefaultAsync(v => v.RegistrationNumber == RegNum);
 
-            if (models == null)
+            if (vehicle == null)
             {
                 return NotFound();
             }
 
-            var ModelSum = new VehicaleSummaryDetailsViewModel(models);
-            ModelSum.Colour = models.Colour;
-            ModelSum.RegistrationNumber = models.RegistrationNumber;
-            ModelSum.Manufacturer = models.Manufacturer;
-            ModelSum.Model = models.Model;
-            ModelSum.Type = models.Type;
+            var contract = await _context.Contracts.FirstOrDefaultAsync(c => c.Vehicle == vehicle);
+
+            var ModelSum = new VehicaleSummaryDetailsViewModel(vehicle);
+            ModelSum.Colour = vehicle.Colour;
+            ModelSum.RegistrationNumber = vehicle.RegistrationNumber;
+            ModelSum.Manufacturer = vehicle.Manufacturer;
+            ModelSum.Model = vehicle.Model;
+            ModelSum.Type = vehicle.Type;
+            ModelSum.ParkingTime = contract.ParkingDate - DateTime.Now;
            
             return View(ModelSum);
 
