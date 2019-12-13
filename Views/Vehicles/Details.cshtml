@@ -1,0 +1,42 @@
+﻿@model VehicaleSummaryDetailsViewModel
+
+@{
+    <div class="container">
+        <table>
+            <thead>
+                <tr class="">
+
+                    <td>
+                        Registration No
+                    </td>
+
+                    <td>
+                        Vehical type
+                    </td>
+                    <td>
+                        Color
+                    </td>
+                    <td>
+                        Parking Time
+                    </td>
+
+
+
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr>
+                    <td>@Model.RegistrationNumber</td>
+                    <td>@Model.Type</td>
+                    <td>@Model.Colour</td>
+                    <td>@Model.Model</td>
+
+                </tr>
+
+            </tbody>
+        </table>
+    </div>
+
+}
+
