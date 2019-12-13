@@ -3,15 +3,17 @@
 
     <h1>Garage index</h1>
 
-    <form asp-action="Filter">
+    <form asp-action="Index" >
 
         <div class="input-group mb-3">
 
-            <input type="text" name="title" class="form-control" placeholder="Search on title" />
+            <input type="text" name="RegNum" class="form-control" placeholder="Search on title" />
 
             <div class="input-group-append">
 
-                <select name="genre" asp-items="@Html.GetEnumSelectList<VehicleType>()" class="form-control"></select>
+                <select name="type" asp-items="@Html.GetEnumSelectList<VehicleType>()" class="form-control">
+                    <option selected="selected" value=""> Select</option>
+                </select>
 
             </div>
 
@@ -29,21 +31,21 @@
         <thead>
             <tr>
                 <th>
-                    @Html.ActionLink("Registration Number", "Sort", new { sortOrder = ViewBag.RegistrationNumberSortParm })
+                    @Html.ActionLink("Registration Number", "Index", new { sortOrder = ViewBag.RegistrationNumberSortParm })
                 </th>
                 <th>
-                    @Html.ActionLink("Type", "Sort", new { sortOrder = ViewBag.TypeSortParm })
+                    @Html.ActionLink("Type", "Index", new { sortOrder = ViewBag.TypeSortParm })
+                </th>
+
+                <th>
+                    @Html.ActionLink("Colour", "Index", new { sortOrder = ViewBag.ColourSortParm })
                 </th>
 
                 <th>
-                    @Html.ActionLink("Colour", "Sort", new { sortOrder = ViewBag.ColourSortParm })
+                    @Html.ActionLink("Parking time", "Index", new { sortOrder = ViewBag.ParkingTimeSortParm })
                 </th>
-
-                @*<th>
-                        @Html.ActionLink("ParkingTime", "Sort", new { sortOrder = ViewBag.ViewBag.ParkingTimeSortParm })
-                    </th>*@
                 <th>
-                    @Html.ActionLink("Model", "Sort", new { sortOrder = ViewBag.ModelSortParm })
+                    @Html.ActionLink("Model", "Index", new { sortOrder = ViewBag.ModelSortParm })
                 </th>
 
             </tr>
@@ -56,25 +58,52 @@
 
             {
                 <tr>
+
                     <td>
+
                         @Html.DisplayFor(modelItem => item.RegistrationNumber)
+
                     </td>
+
                     <td>
+
                         @Html.DisplayFor(modelItem => item.Type)
+
                     </td>
+
                     <td>
+
                         @Html.DisplayFor(modelItem => item.Colour)
+
                     </td>
+
+
+
                     <td>
+
                         @item.ParkingTime.ToString("d")
+
                     </td>
+
                     <td>
                         <a asp-action="UnPark" asp-route-regNum="@item.RegistrationNumber">UnPark</a>
+
                     </td>
+
+                    <td>
+                        <a asp-action="Details" asp-route-regNum="@item.RegistrationNumber">Details</a>
+
+                    </td>
+
                 </tr>
+
+
+
+
             }
 
         </tbody>
+
 
     </table>
 

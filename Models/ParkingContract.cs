@@ -12,7 +12,6 @@ namespace Garage2.Models
         public int Id { get; set; }
         public ParkedVehicle Vehicle { get; set; }
         [Required]
-        [DataType(DataType.Date)]
         public DateTime ParkingDate { get; set; }
     }
 }

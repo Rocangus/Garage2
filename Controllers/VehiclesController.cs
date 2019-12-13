@@ -32,7 +32,7 @@ namespace Garage2.Controllers
         // GET: Vehicle/Details
         public async Task<IActionResult> Details(string RegNum)
         {
-            RegNum = "PAY276";
+            //RegNum = "PAY276";
 
 
             if (RegNum == null)
@@ -49,21 +49,43 @@ namespace Garage2.Controllers
                 return NotFound();
             }
 
-            var T = new VehicaleSummaryDetailsViewModel(models);
-            return View(T);
+            var ModelSum = new VehicaleSummaryDetailsViewModel(models);
+            ModelSum.Colour = models.Colour;
+            ModelSum.RegistrationNumber = models.RegistrationNumber;
+            ModelSum.Manufacturer = models.Manufacturer;
+            ModelSum.Model = models.Model;
+            ModelSum.Type = models.Type;
+           
+            return View(ModelSum);
 
         }
+
+
 
         //public IActionResult Details()
         //{
         //}
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string RegNum, int? type, string sortOrder)
         {
-            var contracts = await _context.Contracts.ToListAsync();
-            var parkvehecle = await _context.ParkedVehicles.ToListAsync();
-            var models = new List<VehicleSummaryViewModel>();
+            ViewBag.TypeSortParm = String.IsNullOrEmpty(sortOrder) ? "type_desc" : "";
+            ViewBag.RegistrationNumberSortParm = sortOrder == "RegistrationNumber" ? "RegistrationNumber_desc" : "RegistrationNumber";
+            ViewBag.ColourSortParm = sortOrder == "Colour" ? "Colour_desc" : "Colour";
+            ViewBag.ParkingTimeSortParm = sortOrder == "ParkingTime" ? "ParkingTime_desc" : "ParkingTime";
 
-            foreach (ParkedVehicle vehicle in parkvehecle)
+
+
+            var vehicles = string.IsNullOrWhiteSpace(RegNum) ?
+                _context.ParkedVehicles :
+                _context.ParkedVehicles.Where(m => m.RegistrationNumber.Contains(RegNum));
+
+            vehicles = type == null ?
+                vehicles :
+                vehicles.Where(m => m.Type == (VehicleType)type);
+
+            var contracts = _context.Contracts.Where(c => vehicles.Contains(c.Vehicle));
+            var viewModels = new List<VehicleSummaryViewModel>();
+
+            foreach (ParkedVehicle vehicle in vehicles)
             {
                 var parkingDate = contracts.FirstOrDefault(c => c.Vehicle.RegistrationNumber
                                                     == vehicle.RegistrationNumber);
@@ -73,12 +95,42 @@ namespace Garage2.Controllers
                     throw new ApplicationException("ParkingContract for a ParkedVehicle not found");
                 }
 
-                VehicleSummaryViewModel model = CreateSummaryViewModel(vehicle, parkingDate);
+                VehicleSummaryViewModel viewModel = CreateSummaryViewModel(vehicle, parkingDate);
 
-                models.Add(model);
+                viewModels.Add(viewModel);
             }
 
-            return View(models);
+
+
+            switch (sortOrder)
+            {
+                case "type_desc":
+                    viewModels = viewModels.OrderByDescending(s => s.Type).ToList();
+                    break;
+                case "RegistrationNumber":
+                    viewModels = viewModels.OrderBy(s => s.RegistrationNumber).ToList();
+                    break;
+                case "RegistrationNumber_desc":
+                    viewModels = viewModels.OrderByDescending(s => s.RegistrationNumber).ToList();
+                    break;
+                case "ParkingTime":
+                    viewModels = viewModels.OrderBy(s => s.ParkingTime).ToList();
+                    break;
+                case "ParkingTime_desc":
+                    viewModels = viewModels.OrderByDescending(s => s.ParkingTime).ToList();
+                    break;
+                case "Colour":
+                    viewModels = viewModels.OrderBy(s => s.Colour).ToList();
+                    break;
+                case "Colour_desc":
+                    viewModels = viewModels.OrderByDescending(s => s.Colour).ToList();
+                    break;
+                default:
+                    viewModels = viewModels.OrderBy(s => s.Type).ToList();
+                    break;
+            }
+
+            return View(viewModels);
         }
 
         private static VehicleSummaryViewModel CreateSummaryViewModel(ParkedVehicle vehicle, ParkingContract parkingDate)
@@ -209,25 +261,19 @@ namespace Garage2.Controllers
             ViewBag.ColourSortParm = sortOrder == "Colour" ? "Colour_desc" : "Colour";
             ViewBag.ParkingTimeSortParm = sortOrder == "ParkingTime" ? "ParkingTime_desc" : "ParkingTime";
 
-            //var model = new VehicleSummaryViewModel();
-            //model.Colour = Parkvehicle.Colour;
-            //model.RegistrationNumber = Parkvehicle.RegistrationNumber;
-            //model.ParkingTime = parkingDate[0].ParkingDate;
-            //model.Type = Parkvehicle.Type;
-           
-            var vehicle = from s in _context.ParkedVehicles
+            var models = from s in _context.ParkedVehicles
                           select s;
 
             switch (sortOrder)
             {
                 case "type_desc":
-                    vehicle = vehicle.OrderByDescending(s => s.Type);
+                    models = models.OrderByDescending(s => s.Type);
                     break;
                 case "RegistrationNumber":
-                    vehicle = vehicle.OrderBy(s => s.RegistrationNumber);
+                    models = models.OrderBy(s => s.RegistrationNumber);
                     break;
                 case "RegistrationNumber_desc":
-                    vehicle = vehicle.OrderByDescending(s => s.RegistrationNumber);
+                    models = models.OrderByDescending(s => s.RegistrationNumber);
                     break;
                 case "ParkingTime":
                     //vehicle = vehicle.OrderBy(s => s.ParkingTime);
@@ -236,16 +282,16 @@ namespace Garage2.Controllers
                     //vehicle = vehicle.OrderByDescending(s => s.ParkingTime);
                     break;
                 case "Colour":
-                    vehicle = vehicle.OrderBy(s => s.Colour);
+                    models = models.OrderBy(s => s.Colour);
                     break;
                 case "Colour_desc":
-                    vehicle = vehicle.OrderByDescending(s => s.Colour);
+                    models = models.OrderByDescending(s => s.Colour);
                     break;
                 default:
-                    vehicle = vehicle.OrderBy(s => s.Type);
+                    models = models.OrderBy(s => s.Type);
                     break;
             }
-            return View( vehicle.ToList());
+            return View( models.ToList());
 
      
 
