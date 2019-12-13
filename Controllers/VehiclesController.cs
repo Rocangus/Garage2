@@ -54,6 +54,7 @@ namespace Garage2.Controllers
             ModelSum.RegistrationNumber = models.RegistrationNumber;
             ModelSum.Manufacturer = models.Manufacturer;
             ModelSum.Model = models.Model;
+            ModelSum.Type = models.Type;
            
             return View(ModelSum);
 
