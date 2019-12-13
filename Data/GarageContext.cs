@@ -29,7 +29,7 @@ namespace Garage2.Data
                 .HasData(
                     new { Id=1, ParkingDate=DateTime.Parse("2019-12-13 10:35:26"), VehicleRegistrationNumber="PAY276"},
                     new { Id=2, ParkingDate=DateTime.Parse("2019-12-13 08:29:47"), VehicleRegistrationNumber= "AAA123" },
-                    new { Id=3, ParkingDate=DateTime.Parse("2019-12-13 14:02:33"), VehicleRegistrationNumber= "HUJ63E" }
+                    new { Id=3, ParkingDate=DateTime.Parse("2019-12-03 14:02:33"), VehicleRegistrationNumber= "HUJ63E" }
                 );
         }
 
