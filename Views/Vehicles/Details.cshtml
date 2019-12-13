@@ -1,61 +1,94 @@
 ﻿@model VehicaleSummaryDetailsViewModel
 @{
     <h1>Garage index</h1>
+ }
 
+<div>
 
-<div class="container">
-    <table class="table">
-        <thead>
-            <tr class="">
+    <h4>Product</h4>
 
-                <td>
-                    Registration No
-                </td>
+    <hr />
 
-                <td>
-                    Vehical type
-                </td>
-                <td>
-                    Color
-                </td>
-                <td>
-                    Model
-                </td>
-                <td>
-                    Manufacture By
-                </td>
-                <td>
-                    Parking Time
-                </td>
+    <dl class="row">
 
-            </tr>
-        </thead>
+        <dt class="col-sm-2">
 
-        <tbody>
-            <tr>
+            @Html.DisplayNameFor(model => model.RegistrationNumber)
 
-                
-                <td>@Model.RegistrationNumber</td>
-                <td>@Model.Type</td>
-                <td>@Model.Colour</td>
-                <td>@Model.Model</td>
-                <td>@Model.Manufacturer</td>
-                <td>@Model.ParkingTime.ToString(@"dd\:hh\:mm")</td>
+        </dt>
 
+        <dd class="col-sm-10">
 
-            </tr>
+            @Model.RegistrationNumber
 
-            <tr>
-                
-                <td>
-                    <a asp-action="Index">Back to List</a>
-                </td>
-               
-            </tr>
+        </dd>
 
-        </tbody>
-    </table>
+        <dt class="col-sm-2">
+
+            @Html.DisplayNameFor(model => model.Type)
+
+        </dt>
+
+        <dd class="col-sm-10">
+
+            @Model.Type
+
+        </dd>
+
+        <dt class="col-sm-2">
+
+            @Html.DisplayNameFor(model => model.Colour)
+
+        </dt>
+
+        <dd class="col-sm-10">
+
+            @Model.Colour
+
+        </dd>
+
+        <dt class="col-sm-2">
+
+            @Html.DisplayNameFor(model => model.Model)
+
+        </dt>
+
+        <dd class="col-sm-10">
+
+            @Model.Model
+
+        </dd>
+
+        <dt class="col-sm-2">
+
+            @Html.DisplayNameFor(model => model.Manufacturer)
+
+        </dt>
+
+        <dd class="col-sm-10">
+
+            @Model.Manufacturer
+
+        </dd>
+
+        <dt class="col-sm-2">
+
+            @Html.DisplayNameFor(model => model.ParkingTime)
+
+        </dt>
+
+        <dd class="col-sm-10">
+
+            @Model.ParkingTime.ToString(@"dd\:hh\:mm")
+
+        </dd>
+
+    </dl>
+
 </div>
 
-}
+<div>
 
+    <a asp-action="Index">Back to List</a>
+
+</div>
