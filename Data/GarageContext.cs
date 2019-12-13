@@ -23,7 +23,7 @@ namespace Garage2.Data
                 );
             modelBuilder.Entity<ParkingContract>()
                 .HasData(
-                    new { Id=1, ParkingDate=DateTime.Parse("2019-08-30"), VehicleRegistrationNumber="PAY276"}
+                    new { Id=1, ParkingDate=DateTime.Parse("2019-12-13 07:35:26"), VehicleRegistrationNumber="PAY276"}
                 );
         }
 
