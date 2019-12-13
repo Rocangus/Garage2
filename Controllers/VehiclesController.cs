@@ -64,9 +64,9 @@ namespace Garage2.Controllers
 
             foreach (ParkedVehicle vehicle in parkvehecle)
             {
-                var parkingDate = contracts.Where(c => c.Vehicle.RegistrationNumber
-                                                    == vehicle.RegistrationNumber).ToList();
-                if (parkingDate.Count() != 1)
+                var parkingDate = contracts.FirstOrDefault(c => c.Vehicle.RegistrationNumber
+                                                    == vehicle.RegistrationNumber);
+                if (parkingDate == null)
                 {
                     //Something has gone wrong
                     throw new ApplicationException("ParkingContract for a ParkedVehicle not found");
@@ -80,12 +80,12 @@ namespace Garage2.Controllers
             return View(models);
         }
 
-        private static VehicleSummaryViewModel CreateSummaryViewModel(ParkedVehicle vehicle, List<ParkingContract> parkingDate)
+        private static VehicleSummaryViewModel CreateSummaryViewModel(ParkedVehicle vehicle, ParkingContract parkingDate)
         {
             var model = new VehicleSummaryViewModel();
             model.Colour = vehicle.Colour;
             model.RegistrationNumber = vehicle.RegistrationNumber;
-            model.ParkingTime = parkingDate[0].ParkingDate;
+            model.ParkingTime = parkingDate.ParkingDate;
             model.Type = vehicle.Type;
             return model;
         }
