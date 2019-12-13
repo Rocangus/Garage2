@@ -21,14 +21,7 @@ namespace Garage2.Controllers
         {
             _context = context;
         }
-
-        public string regnum { get; set; }
-        public string Type { get; set; }
-        public string Manufacturere { get; set; }
-        public string color { get; set; }
-        public string model { get; set; }
-
-
+               
         // GET: Vehicle/Details
         public async Task<IActionResult> Details(string RegNum)
         {
