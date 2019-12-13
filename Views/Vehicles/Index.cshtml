@@ -3,7 +3,7 @@
 
     <h1>Garage index</h1>
 
-    <form asp-action="Filter" >
+    <form asp-action="Index" >
 
         <div class="input-group mb-3">
 
@@ -31,21 +31,21 @@
         <thead>
             <tr>
                 <th>
-                    @Html.ActionLink("Registration Number", "Sort", new { sortOrder = ViewBag.RegistrationNumberSortParm })
+                    @Html.ActionLink("Registration Number", "Index", new { sortOrder = ViewBag.RegistrationNumberSortParm })
                 </th>
                 <th>
-                    @Html.ActionLink("Type", "Sort", new { sortOrder = ViewBag.TypeSortParm })
-                </th>
-
-                <th>
-                    @Html.ActionLink("Colour", "Sort", new { sortOrder = ViewBag.ColourSortParm })
+                    @Html.ActionLink("Type", "Index", new { sortOrder = ViewBag.TypeSortParm })
                 </th>
 
                 <th>
-                    @Html.ActionLink("Manufacturer", "Sort", new { sortOrder = ViewBag.ManufacturerSortParm })
+                    @Html.ActionLink("Colour", "Index", new { sortOrder = ViewBag.ColourSortParm })
+                </th>
+
+                <th>
+                    @Html.ActionLink("Parking time", "Index", new { sortOrder = ViewBag.ParkingTimeSortParm })
                 </th>
                 <th>
-                    @Html.ActionLink("Model", "Sort", new { sortOrder = ViewBag.ModelSortParm })
+                    @Html.ActionLink("Model", "Index", new { sortOrder = ViewBag.ModelSortParm })
                 </th>
 
             </tr>
