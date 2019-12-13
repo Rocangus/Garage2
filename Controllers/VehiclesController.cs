@@ -16,6 +16,7 @@ namespace Garage2.Controllers
     public class VehiclesController:Controller
     {
         private GarageContext _context;
+        private float minutePrice;
 
         public VehiclesController(GarageContext context)
         {
@@ -228,7 +229,11 @@ namespace Garage2.Controllers
             }
             var currentTime = DateTime.Now;
             var parkingDuration = currentTime - contract.ParkingDate;
-            var model = new Tuple<ParkedVehicle, ParkingContract,DateTime, TimeSpan>(vehicle, contract, currentTime, parkingDuration);
+            float cost = 50 * parkingDuration.Days;
+            var durationWithDaysRemoved = parkingDuration - new TimeSpan(parkingDuration.Days * TimeSpan.TicksPerDay);
+            cost += (float)durationWithDaysRemoved.TotalMinutes * minutePrice;
+            
+            var model = new Tuple<ParkedVehicle, ParkingContract,DateTime, TimeSpan, float>(vehicle, contract, currentTime, parkingDuration, cost);
 
             return View(model);
         } 
