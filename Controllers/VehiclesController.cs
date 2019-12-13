@@ -93,8 +93,6 @@ namespace Garage2.Controllers
                 viewModels.Add(viewModel);
             }
 
-
-
             switch (sortOrder)
             {
                 case "type_desc":
