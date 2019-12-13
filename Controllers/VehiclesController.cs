@@ -138,7 +138,7 @@ namespace Garage2.Controllers
             var model = new VehicleSummaryViewModel();
             model.Colour = vehicle.Colour;
             model.RegistrationNumber = vehicle.RegistrationNumber;
-            model.ParkingTime = parkingDate.ParkingDate;
+            model.ParkingTime = DateTime.Now - parkingDate.ParkingDate;
             model.Type = vehicle.Type;
             return model;
         }
