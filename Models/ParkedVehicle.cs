@@ -26,5 +26,12 @@ namespace Garage2.Models
 
         [Range(2, 18)]
         public int NumberOfWheels { get; set; }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is ParkedVehicle vehicle)
+                return RegistrationNumber.Equals(vehicle.RegistrationNumber);
+            return false;
+        }
     }
 }
