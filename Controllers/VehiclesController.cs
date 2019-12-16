@@ -13,7 +13,7 @@ using Newtonsoft.Json;
 
 namespace Garage2.Controllers
 {
-    public class VehiclesController:Controller
+    public class VehiclesController : Controller
     {
         private GarageContext _context;
         private float minutePrice = 0.05f;
@@ -22,7 +22,7 @@ namespace Garage2.Controllers
         {
             _context = context;
         }
-               
+
         // GET: Vehicle/Details
         public async Task<IActionResult> Details(string RegNum)
         {
@@ -52,16 +52,11 @@ namespace Garage2.Controllers
             ModelSum.Model = vehicle.Model;
             ModelSum.Type = vehicle.Type;
             ModelSum.ParkingTime = contract.ParkingDate - DateTime.Now;
-           
+
             return View(ModelSum);
 
         }
 
-
-
-        //public IActionResult Details()
-        //{
-        //}
         public async Task<IActionResult> Index(string RegNum, int? type, string sortOrder)
         {
             ViewBag.TypeSortParm = String.IsNullOrEmpty(sortOrder) ? "type_desc" : "";
@@ -148,7 +143,7 @@ namespace Garage2.Controllers
         // Post: Vehicle/Park
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Park( ParkParkedVehicleViewModel viewModel)
+        public async Task<IActionResult> Park(ParkParkedVehicleViewModel viewModel)
         {
             if (ModelState.IsValid)
             {
@@ -165,7 +160,7 @@ namespace Garage2.Controllers
                 _context.Add(new ParkingContract()
                 {
                     Vehicle = vehicle,
-                    ParkingDate=DateTime.Today
+                    ParkingDate = DateTime.Today
                 });
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -202,7 +197,7 @@ namespace Garage2.Controllers
         public async Task<IActionResult> UnParkConfirmed(string RegNum)
         {
             var vehicle = await _context.ParkedVehicles.FindAsync(RegNum);
-            var contract =  await _context.Contracts.FirstOrDefaultAsync(c => c.Vehicle == vehicle);
+            var contract = await _context.Contracts.FirstOrDefaultAsync(c => c.Vehicle == vehicle);
             if (contract != null && contract != null)
             {
                 _context.Contracts.Remove(contract);
@@ -232,11 +227,11 @@ namespace Garage2.Controllers
             float cost = 50 * parkingDuration.Days;
             var durationWithDaysRemoved = parkingDuration - new TimeSpan(parkingDuration.Days * TimeSpan.TicksPerDay);
             cost += (float)durationWithDaysRemoved.TotalMinutes * minutePrice;
-            
-            var model = new Tuple<ParkedVehicle, ParkingContract,DateTime, TimeSpan, float>(vehicle, contract, currentTime, parkingDuration, cost);
+
+            var model = new Tuple<ParkedVehicle, ParkingContract, DateTime, TimeSpan, float>(vehicle, contract, currentTime, parkingDuration, cost);
 
             return View(model);
-        } 
+        }
 
         // Filter by RegNum
         public async Task<IActionResult> Filter(string RegNum, int? type)
@@ -244,7 +239,7 @@ namespace Garage2.Controllers
             var model = string.IsNullOrWhiteSpace(RegNum) ?
                 await _context.ParkedVehicles.ToListAsync() :
                 await _context.ParkedVehicles.Where(m => m.RegistrationNumber == RegNum).ToListAsync();
-               
+
             model = type == null ?
                 model :
                 model.Where(m => m.Type == (VehicleType)type).ToList();
@@ -261,7 +256,7 @@ namespace Garage2.Controllers
             ViewBag.ParkingTimeSortParm = sortOrder == "ParkingTime" ? "ParkingTime_desc" : "ParkingTime";
 
             var models = from s in _context.ParkedVehicles
-                          select s;
+                         select s;
 
             switch (sortOrder)
             {
@@ -290,13 +285,30 @@ namespace Garage2.Controllers
                     models = models.OrderBy(s => s.Type);
                     break;
             }
-            return View( models.ToList());
-
-     
-
+            return View(models.ToList());
         }
 
 
+        public async Task<IActionResult> TypeOfVehicles()
+        {
+            Dictionary<VehicleType, int> types = new Dictionary<VehicleType, int>();
+            ParkedVehicle[] vehicles = _context.ParkedVehicles.ToArray();
+
+            for (int i = 0; i < vehicles.Length; i++)
+            {
+                if(_context.ParkedVehicles.Count() > 0)
+                {
+                    var typeName = vehicles[i].Type;
+                    if (types.ContainsKey(typeName))
+                        types[typeName] += 1;
+                    else
+                        types[typeName] = 1;
+
+                }
+
+            }
+            return View(types);
+        }
 
     }
 }
