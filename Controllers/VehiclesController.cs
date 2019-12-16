@@ -21,11 +21,37 @@ namespace Garage2.Controllers
         public VehiclesController(GarageContext context)
         {
             _context = context;
+
+           
         }
-               
+
+
+        // Get Wheel
+
+        private async Task<int> NumberOfWheelsAsync()
+        {
+
+
+
+            int Wheel = 0;
+            var vehicles = await _context.ParkedVehicles
+                    .ToListAsync();
+            foreach (var vehicle in vehicles)
+            {
+                Wheel  = Wheel+ vehicle.NumberOfWheels;
+   
+            }
+
+            return(Wheel);
+
+        }
+
+
         // GET: Vehicle/Details
         public async Task<IActionResult> Details(string RegNum)
         {
+
+
             //RegNum = "PAY276";
 
 
@@ -34,7 +60,7 @@ namespace Garage2.Controllers
                 return NotFound();
 
             }
-
+            //
             var vehicle = await _context.ParkedVehicles
                 .FirstOrDefaultAsync(v => v.RegistrationNumber == RegNum);
 
@@ -52,6 +78,7 @@ namespace Garage2.Controllers
             ModelSum.Model = vehicle.Model;
             ModelSum.Type = vehicle.Type;
             ModelSum.ParkingTime = contract.ParkingDate - DateTime.Now;
+           // ModelSum.NumberOfWheels = vehicle.NumberOfWheels;
            
             return View(ModelSum);
 
@@ -126,6 +153,7 @@ namespace Garage2.Controllers
             }
 
             return View(viewModels);
+   
         }
 
         private static VehicleSummaryViewModel CreateSummaryViewModel(ParkedVehicle vehicle, ParkingContract parkingDate)
