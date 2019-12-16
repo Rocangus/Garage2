@@ -30,9 +30,6 @@ namespace Garage2.Controllers
 
         private async Task<int> NumberOfWheelsAsync()
         {
-
-
-
             int Wheel = 0;
             var vehicles = await _context.ParkedVehicles
                     .ToListAsync();
@@ -45,7 +42,7 @@ namespace Garage2.Controllers
             return(Wheel);
 
         }
-               
+
         // GET: Vehicle/Details
         public async Task<IActionResult> Details(string RegNum)
         {
@@ -335,6 +332,26 @@ namespace Garage2.Controllers
 
             }
             return View(types);
+        }
+
+        public async Task<IActionResult> TotalCostInGarage()
+        {
+            var contractString = TempData["contract"] as string;
+            var contract = JsonConvert.DeserializeObject<ParkingContract>(contractString) as ParkingContract;
+            var vehicles = _context.ParkedVehicles.ToList();
+            var TotalCost = 0.0;
+            var currentTime = DateTime.Now;
+
+            for (int i = 0; i < vehicles.Count; i++)
+            {      
+                var parkingDuration = currentTime - contract.ParkingDate;
+                float cost = 50 * parkingDuration.Days;
+                var durationWithDaysRemoved = parkingDuration - new TimeSpan(parkingDuration.Days * TimeSpan.TicksPerDay);
+                cost += (float)durationWithDaysRemoved.TotalMinutes * minutePrice;
+                TotalCost += cost;
+
+            }
+            return View(TotalCost);
         }
 
     }
