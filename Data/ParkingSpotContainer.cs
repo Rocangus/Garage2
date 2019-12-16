@@ -11,6 +11,7 @@ namespace Garage2.Data
     {
         private static ParkSpot[] parkSpots;
         public static bool IsInitialized { get; set; }
+        private static ParkSpot FirstAvailableSpot;
 
         public static ParkSpot[] GetParkSpots(IConfiguration configuration)
         {
@@ -35,19 +36,22 @@ namespace Garage2.Data
             foreach (var spot in spots)
             {
                 if (SpotIsAvailable(spot, forMotorcycle))
+                {
+                    FirstAvailableSpot = spot;
                     return true;
+                }
             }
             return false;
         }
 
         public static ParkSpot GetAvailableSpot(ParkSpot[] spots, bool forMotorcycle)
         {
-            foreach (var spot in spots)
-            {
-                if (SpotIsAvailable(spot, forMotorcycle))
-                    return spot;
-            }
+            if (SpotIsAvailable(FirstAvailableSpot, forMotorcycle))
+                return FirstAvailableSpot;
+            if (SpotIsAvailable(spots, forMotorcycle))
+                    return FirstAvailableSpot;
             return null;
         }
+
     }
 }
