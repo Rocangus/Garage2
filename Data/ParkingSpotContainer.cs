@@ -53,5 +53,15 @@ namespace Garage2.Data
             return null;
         }
 
+        public static ParkSpot FindSpotByVehicle(ParkedVehicle vehicle)
+        {
+            foreach (var spot in parkSpots)
+            {
+                if (spot != null && spot.ParkedVehicles.Any(v => v.RegistrationNumber == vehicle.RegistrationNumber))
+                    return spot;
+            }
+            return null;
+        }
+
     }
 }
