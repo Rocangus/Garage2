@@ -2,9 +2,9 @@
 @{
 
     <h1>Garage index</h1>
-
-    <partial name="ParkSpot/Index.cshtml" />
-
+    <hr />
+    @await Component.InvokeAsync("SpotStatus")
+    <hr />
     <form asp-action="Index" >
 
         <div class="input-group mb-3">

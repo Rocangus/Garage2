@@ -7,16 +7,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Garage2.Controllers
+namespace Garage2.ViewComponents
 {
-    public class ParkSpotController : Controller
+    public class SpotStatusViewComponent : ViewComponent
     {
-        private GarageContext _context;
-        private IConfiguration _configuration;
+        private readonly GarageContext _context;
+        private readonly IConfiguration _configuration;
         private ParkSpot[] parkSpots;
         private bool parkSpotsInitialized;
 
-        public ParkSpotController(GarageContext context, IConfiguration configuration)
+        public SpotStatusViewComponent(GarageContext context, IConfiguration configuration)
         {
             _context = context;
             _configuration = configuration;
@@ -24,7 +24,7 @@ namespace Garage2.Controllers
             parkSpotsInitialized = false;
         }
 
-        public IActionResult Index()
+        public IViewComponentResult Invoke()
         {
             if (!parkSpotsInitialized)
             {
