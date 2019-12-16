@@ -14,19 +14,17 @@ namespace Garage2.ViewComponents
         private readonly GarageContext _context;
         private readonly IConfiguration _configuration;
         private ParkSpot[] parkSpots;
-        private bool parkSpotsInitialized;
 
         public SpotStatusViewComponent(GarageContext context, IConfiguration configuration)
         {
             _context = context;
             _configuration = configuration;
-            parkSpots = new ParkSpot[int.Parse(configuration["ParkingSpaces"])];
-            parkSpotsInitialized = false;
+            parkSpots = ParkingSpotContainer.GetParkSpots(configuration);
         }
 
         public IViewComponentResult Invoke()
         {
-            if (!parkSpotsInitialized)
+            if (!ParkingSpotContainer.IsInitialized)
             {
                 InitializeParkSpots();
             }
@@ -45,7 +43,7 @@ namespace Garage2.ViewComponents
                 spot.VehicleCount = 1;
                 parkSpots[i] = spot;
             }
-            parkSpotsInitialized = true;
+            ParkingSpotContainer.IsInitialized = true;
         }
     }
 }
