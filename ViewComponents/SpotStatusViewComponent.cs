@@ -37,15 +37,45 @@ namespace Garage2.ViewComponents
             var vehicles = _context.ParkedVehicles.ToList();
             for (var i = 0; i < vehicles.Count(); i++)
             {
-                var vehicleIsMotorcycle = vehicles[i].Type == VehicleType.Motorcycle;
-                var spot = ParkingSpotContainer.GetAvailableSpot(parkSpots, vehicleIsMotorcycle);
+                if (vehicles[i].Type == VehicleType.Truck)
+                {
+                    ParkOnMultipleSpots(vehicles[i], 3);
+                }
+                else
+                {
+                    if (vehicles[i].Type == VehicleType.Bus)
+                    {
+                        ParkOnMultipleSpots(vehicles[i], 2);
+                    }
+                    else
+                    {
+                        var vehicleIsMotorcycle = vehicles[i].Type == VehicleType.Motorcycle;
+                        var spot = ParkingSpotContainer.GetAvailableSpot(parkSpots, vehicleIsMotorcycle);
 
-                spot.Park(vehicles[i]);
-                spot.VehicleCount += 1;
-                spot.HasMotorcycles = vehicleIsMotorcycle;
-                parkSpots[spot.Id] = spot;
+                        spot.Park(vehicles[i]);
+                        spot.VehicleCount += 1;
+                        spot.HasMotorcycles = vehicleIsMotorcycle;
+                        parkSpots[spot.Id] = spot;
+                    }
+                }
+                
             }
             ParkingSpotContainer.IsInitialized = true;
+        }
+
+        private void ParkOnMultipleSpots(ParkedVehicle vehicle, int spotsRequired)
+        {
+            int startOfSpotSequence;
+            if (ParkingSpotContainer.FindConsecutiveSpots(spotsRequired, out startOfSpotSequence))
+            {
+                var spots = ParkingSpotContainer.ParkOnMultipleSpots(startOfSpotSequence, spotsRequired, vehicle);
+                var n = 0;
+                for (var i = startOfSpotSequence; i < startOfSpotSequence + spotsRequired; i++)
+                {
+                    parkSpots[i] = spots[n];
+                    n++;
+                }
+            }
         }
     }
 }

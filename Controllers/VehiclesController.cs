@@ -154,22 +154,45 @@ namespace Garage2.Controllers
             if (ModelState.IsValid)
             {
                 var vehicle = new ParkedVehicle();
-                ParkSpot spot = ParkingSpotContainer.GetAvailableSpot(ParkingSpotContainer.GetParkSpots(_configuration),
-                    viewModel.Type == VehicleType.Motorcycle);
-                if (spot == null)
-                    return View(); // RedirectToAction (GarageFull)
-                //populate all fields from viewModel
-                vehicle.RegistrationNumber = viewModel.RegistrationNumber;
-                vehicle.Type = viewModel.Type;
-                vehicle.Colour = viewModel.Colour;
-                vehicle.Manufacturer = viewModel.Manufacturer;
-                vehicle.Model = viewModel.Model;
-                vehicle.NumberOfWheels = viewModel.NumberOfWheels;
+                int numberRequired;
+                switch (viewModel.Type)
+                {
+                    case VehicleType.Bus:
+                        {
+                            numberRequired = 2;
+                            break;
+                        }
+                    case VehicleType.Truck:
+                        {
+                            numberRequired = 3;
+                            break;
+                        }
+                    default:
+                        {
+                            numberRequired = 1;
+                            break;
+                        }
 
+                }
+                int startOfSpotSequence;
+                if (viewModel.Type != VehicleType.Motorcycle && ParkingSpotContainer.FindConsecutiveSpots(numberRequired, out startOfSpotSequence))
+                {
+                    PopulateVehicleFromViewModel(viewModel, vehicle);
+                    ParkingSpotContainer.ParkOnMultipleSpots(startOfSpotSequence, numberRequired, vehicle);
+
+                }
+                else
+                {
+                    var spot = ParkingSpotContainer.GetAvailableSpot(ParkingSpotContainer.GetParkSpots(_configuration), true);
+                    if (spot != null)
+                    {
+                        PopulateVehicleFromViewModel(viewModel, vehicle);
+                        spot.Park(vehicle);
+                        spot.VehicleCount++;
+                        spot.HasMotorcycles = true;
+                    }
+                }
                 _context.Add(vehicle);
-                spot.VehicleCount += 1;
-                spot.HasMotorcycles = viewModel.Type == VehicleType.Motorcycle;
-                spot.Park(vehicle);
                 _context.Add(new ParkingContract()
                 {
                     Vehicle = vehicle,
@@ -181,6 +204,16 @@ namespace Garage2.Controllers
 
             return View();
 
+        }
+
+        private static void PopulateVehicleFromViewModel(ParkParkedVehicleViewModel viewModel, ParkedVehicle vehicle)
+        {
+            vehicle.RegistrationNumber = viewModel.RegistrationNumber;
+            vehicle.Type = viewModel.Type;
+            vehicle.Colour = viewModel.Colour;
+            vehicle.Manufacturer = viewModel.Manufacturer;
+            vehicle.Model = viewModel.Model;
+            vehicle.NumberOfWheels = viewModel.NumberOfWheels;
         }
 
         // GET: Vehicle/UnPark
@@ -218,8 +251,13 @@ namespace Garage2.Controllers
                 await _context.SaveChangesAsync();
             }
 
-            var spot = ParkingSpotContainer.FindSpotByVehicle(vehicle);
-            spot.Unpark(vehicle);
+            ParkSpot spot;
+            // TODO: More elegant solution without extra calls to FindSpotByVehicle
+            do
+            {
+                spot = ParkingSpotContainer.FindSpotByVehicle(vehicle);
+                spot.Unpark(vehicle);
+            } while (ParkingSpotContainer.FindSpotByVehicle(vehicle) != null);
 
             TempData["vehicle"] = JsonConvert.SerializeObject(vehicle);
             TempData["contract"] = JsonConvert.SerializeObject(contract);
@@ -283,7 +321,7 @@ namespace Garage2.Controllers
             decimal TotalCost = GetTotalParkingCost();
 
             //How many vehicles with white color & 4 wheels
-            int WhiteColor = _context.ParkedVehicles.Where(v => v.Colour.ToLower().Equals("white") 
+            int WhiteColor = _context.ParkedVehicles.Where(v => v.Colour.ToLower().Equals("white")
                                                            && v.NumberOfWheels == 4).Count();
 
             var model = new Tuple<Dictionary<VehicleType, int>, int, decimal, int>(types, Wheel, TotalCost, WhiteColor);

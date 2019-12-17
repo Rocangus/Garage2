@@ -13,6 +13,8 @@ namespace Garage2.Data
         public static bool IsInitialized { get; set; }
         private static ParkSpot FirstAvailableSpot;
         private static int nextSpotId = 0;
+        private static int lastFinalIndex;
+        private static int lastSequenceStart;
 
         public static ParkSpot[] GetParkSpots(IConfiguration configuration)
         {
@@ -58,7 +60,7 @@ namespace Garage2.Data
             if (FirstAvailableSpot != null && SpotIsAvailable(FirstAvailableSpot, forMotorcycle))
                 return FirstAvailableSpot;
             if (SpotIsAvailable(spots, forMotorcycle))
-                    return FirstAvailableSpot;
+                return FirstAvailableSpot;
             return null;
         }
 
@@ -72,5 +74,50 @@ namespace Garage2.Data
             return null;
         }
 
+        public static bool FindConsecutiveSpots(int numberRequired, out int startOfSpotSequence)
+        {
+            lastFinalIndex = 0;
+            var spot = GetAvailableSpot(parkSpots, false);
+            lastFinalIndex = spot.Id;
+            while (lastFinalIndex < 25)
+            {
+                if (FindConsecutiveSpots(lastFinalIndex, numberRequired))
+                {
+                    startOfSpotSequence = lastSequenceStart;
+                    return true;
+                }
+
+            }
+            startOfSpotSequence = -1;
+            return false;
+        }
+
+        private static bool FindConsecutiveSpots(int start, int numberRequired)
+        {
+            lastSequenceStart = start;
+            var i = start;
+            var numberAvailable = 0;
+            while (i < parkSpots.Length && SpotIsAvailable(parkSpots[i], false) && numberAvailable <= numberRequired)
+            {
+                numberAvailable++;
+                i++;
+            }
+            lastFinalIndex = i;
+            return numberAvailable >= numberRequired;
+        }
+
+        public static ParkSpot[] ParkOnMultipleSpots(int startOfSpotSequence, int spotSequenceLength, ParkedVehicle vehicle)
+        {
+            var spots = new ParkSpot[spotSequenceLength];
+            var n = 0;
+            for (var i = startOfSpotSequence; i < startOfSpotSequence + spotSequenceLength; i++)
+            {
+                parkSpots[i].Park(vehicle);
+                parkSpots[i].VehicleCount = 1;
+                spots[n] = parkSpots[i];
+                n++;
+            }
+            return spots;
+        }
     }
 }
