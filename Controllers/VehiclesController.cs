@@ -17,8 +17,8 @@ namespace Garage2.Controllers
     public class VehiclesController : Controller
     {
         private GarageContext _context;
+        private decimal minutePrice = 0.05M;
         private IConfiguration _configuration;
-        private float minutePrice = 0.05f;
 
         public VehiclesController(GarageContext context, IConfiguration configuration)
         {
@@ -26,18 +26,19 @@ namespace Garage2.Controllers
             _configuration = configuration;
         }
 
+
+
         // GET: Vehicle/Details
         public async Task<IActionResult> Details(string RegNum)
         {
             //RegNum = "PAY276";
-
 
             if (RegNum == null)
             {
                 return NotFound();
 
             }
-
+            //
             var vehicle = await _context.ParkedVehicles
                 .FirstOrDefaultAsync(v => v.RegistrationNumber == RegNum);
 
@@ -55,6 +56,7 @@ namespace Garage2.Controllers
             ModelSum.Model = vehicle.Model;
             ModelSum.Type = vehicle.Type;
             ModelSum.ParkingTime = contract.ParkingDate - DateTime.Now;
+            // ModelSum.NumberOfWheels = vehicle.NumberOfWheels;
 
             return View(ModelSum);
 
@@ -124,6 +126,7 @@ namespace Garage2.Controllers
             }
 
             return View(viewModels);
+
         }
 
         private static VehicleSummaryViewModel CreateSummaryViewModel(ParkedVehicle vehicle, ParkingContract parkingDate)
@@ -235,15 +238,23 @@ namespace Garage2.Controllers
             {
                 throw new Exception("JsonConvert failed to convert TempData");
             }
-            var currentTime = DateTime.Now;
-            var parkingDuration = currentTime - contract.ParkingDate;
-            float cost = 50 * parkingDuration.Days;
-            var durationWithDaysRemoved = parkingDuration - new TimeSpan(parkingDuration.Days * TimeSpan.TicksPerDay);
-            cost += (float)durationWithDaysRemoved.TotalMinutes * minutePrice;
+            DateTime currentTime;
+            TimeSpan parkingDuration;
+            decimal cost;
+            GetParkingCost(contract, out currentTime, out parkingDuration, out cost);
 
-            var model = new Tuple<ParkedVehicle, ParkingContract, DateTime, TimeSpan, float>(vehicle, contract, currentTime, parkingDuration, cost);
+            var model = new Tuple<ParkedVehicle, ParkingContract, DateTime, TimeSpan, decimal>(vehicle, contract, currentTime, parkingDuration, cost);
 
             return View(model);
+        }
+
+        private void GetParkingCost(ParkingContract contract, out DateTime currentTime, out TimeSpan parkingDuration, out decimal cost)
+        {
+            currentTime = DateTime.Now;
+            parkingDuration = currentTime - contract.ParkingDate;
+            cost = 50 * parkingDuration.Days;
+            var durationWithDaysRemoved = parkingDuration - new TimeSpan(parkingDuration.Days * TimeSpan.TicksPerDay);
+            cost += (decimal)durationWithDaysRemoved.TotalMinutes * minutePrice;
         }
 
         // Filter by RegNum
@@ -302,6 +313,23 @@ namespace Garage2.Controllers
         }
 
 
+        // Get Wheel
+
+        private async Task<int> NumberOfWheelsAsync()
+        {
+            int Wheel = 0;
+            var vehicles = await _context.ParkedVehicles
+                    .ToListAsync();
+            foreach (var vehicle in vehicles)
+            {
+                Wheel = Wheel + vehicle.NumberOfWheels;
+
+            }
+
+            return (Wheel);
+
+        }
+
         public async Task<IActionResult> TypeOfVehicles()
         {
             Dictionary<VehicleType, int> types = new Dictionary<VehicleType, int>();
@@ -309,7 +337,7 @@ namespace Garage2.Controllers
 
             for (int i = 0; i < vehicles.Length; i++)
             {
-                if(_context.ParkedVehicles.Count() > 0)
+                if (_context.ParkedVehicles.Count() > 0)
                 {
                     var typeName = vehicles[i].Type;
                     if (types.ContainsKey(typeName))
@@ -320,8 +348,73 @@ namespace Garage2.Controllers
                 }
 
             }
+
             return View(types);
         }
 
+        public async Task<IActionResult> GetStatistics()
+        {
+            // How many vehicle in vary types
+            Dictionary<VehicleType, int> types = new Dictionary<VehicleType, int>();
+            ParkedVehicle[] vehicles = _context.ParkedVehicles.ToArray();
+
+            for (int i = 0; i < vehicles.Length; i++)
+            {
+                if (_context.ParkedVehicles.Count() > 0)
+                {
+                    var typeName = vehicles[i].Type;
+                    if (types.ContainsKey(typeName))
+                        types[typeName] += 1;
+                    else
+                        types[typeName] = 1;
+
+                }
+
+            }
+
+            int Wheel = GetWheelCount(vehicles);
+
+            //Total Cost
+            decimal TotalCost = GetTotalParkingCost();
+
+            //How many vehicles with white color & 4 wheels
+            int WhiteColor = _context.ParkedVehicles.Where(v => v.Colour.ToLower().Equals("white") 
+                                                           && v.NumberOfWheels == 4).Count();
+
+            var model = new Tuple<Dictionary<VehicleType, int>, int, decimal, int>(types, Wheel, TotalCost, WhiteColor);
+
+            return View(model);
+        }
+
+        private decimal GetTotalParkingCost()
+        {
+            var contracts = _context.Contracts.ToArray();
+            var TotalCost = 0.0M;
+            var currentTime = DateTime.Now;
+            for (int i = 0; i < contracts.Length; i++)
+            {
+                var contract = contracts[i];
+                TimeSpan parkingDuration;
+                decimal cost;
+                GetParkingCost(contract, out currentTime, out parkingDuration, out cost);
+                TotalCost += cost;
+
+            }
+
+            return TotalCost;
+        }
+
+        private static int GetWheelCount(ParkedVehicle[] vehicles)
+        {
+            // Total wheels
+            int Wheel = 0;
+            foreach (var vehicle in vehicles)
+            {
+                Wheel = Wheel + vehicle.NumberOfWheels;
+
+            }
+
+            return Wheel;
+        }
     }
 }

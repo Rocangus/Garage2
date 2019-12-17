@@ -1,4 +1,4 @@
-﻿@model Tuple<ParkedVehicle, ParkingContract, DateTime, TimeSpan, float>
+﻿@model Tuple<ParkedVehicle, ParkingContract, DateTime, TimeSpan, decimal>
 
 @{
     ViewData["Title"] = "Parking Receipt";
@@ -31,7 +31,7 @@
     <p class="align-self-end">
         <span>Price: <strong>0,05 SEK</strong> per minute (max 50 SEK per day)</span><br />
         <span>Total parking time: <strong>@Model.Item4.Days.ToString() days, @Model.Item4.Hours hours, @Model.Item4.Minutes minutes</strong></span>
-        <span class="text-right">Total: <strong>@Model.Item5 SEK</strong></span>
+        <span class="text-right">Total: <strong>@System.Math.Ceiling(Model.Item5) SEK</strong></span>
     </p>
 </div>
 

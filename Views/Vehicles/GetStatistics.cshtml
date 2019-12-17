@@ -1,0 +1,33 @@
+﻿@model Tuple<Dictionary<VehicleType, int>, int, decimal, int>
+@{
+    ViewData["Title"] = "GetStatistics";
+}
+
+<h1>GetStatistics</h1>
+
+<div>
+    <h3>How many types of each Vehicles</h3>
+    <span><strong>Busses: </strong>@Model.Item1.GetValueOrDefault(VehicleType.Bus)</span><br />
+    <span><strong>Cars: </strong>@Model.Item1.GetValueOrDefault(VehicleType.Car)</span><br />
+    <span><strong>Motorcycles: </strong>@Model.Item1.GetValueOrDefault(VehicleType.Motorcycle)</span><br />
+    <span><strong>Trucks: </strong>@Model.Item1.GetValueOrDefault(VehicleType.Truck)</span>
+</div>
+
+<div>
+    <h3>Total Wheels</h3>
+    <span>@Model.Item2</span>
+  
+</div>
+
+<div>
+    <h3>Total Costs</h3>
+    <span>@System.Math.Round(Model.Item3,2)</span>
+
+</div>
+
+<div>
+    <h3>How many vehicles with white color & 4 wheels</h3>
+    <span>@Model.Item4</span>
+
+</div>
+
