@@ -16,7 +16,7 @@ namespace Garage2.Controllers
     public class VehiclesController : Controller
     {
         private GarageContext _context;
-        private float minutePrice = 0.05f;
+        private decimal minutePrice = 0.05M;
 
         public VehiclesController(GarageContext context)
         {
@@ -227,15 +227,23 @@ namespace Garage2.Controllers
             {
                 throw new Exception("JsonConvert failed to convert TempData");
             }
-            var currentTime = DateTime.Now;
-            var parkingDuration = currentTime - contract.ParkingDate;
-            float cost = 50 * parkingDuration.Days;
-            var durationWithDaysRemoved = parkingDuration - new TimeSpan(parkingDuration.Days * TimeSpan.TicksPerDay);
-            cost += (float)durationWithDaysRemoved.TotalMinutes * minutePrice;
+            DateTime currentTime;
+            TimeSpan parkingDuration;
+            decimal cost;
+            GetParkingCost(contract, out currentTime, out parkingDuration, out cost);
 
-            var model = new Tuple<ParkedVehicle, ParkingContract, DateTime, TimeSpan, float>(vehicle, contract, currentTime, parkingDuration, cost);
+            var model = new Tuple<ParkedVehicle, ParkingContract, DateTime, TimeSpan, decimal>(vehicle, contract, currentTime, parkingDuration, cost);
 
             return View(model);
+        }
+
+        private void GetParkingCost(ParkingContract contract, out DateTime currentTime, out TimeSpan parkingDuration, out decimal cost)
+        {
+            currentTime = DateTime.Now;
+            parkingDuration = currentTime - contract.ParkingDate;
+            cost = 50 * parkingDuration.Days;
+            var durationWithDaysRemoved = parkingDuration - new TimeSpan(parkingDuration.Days * TimeSpan.TicksPerDay);
+            cost += (decimal)durationWithDaysRemoved.TotalMinutes * minutePrice;
         }
 
         // Filter by RegNum
@@ -333,35 +341,15 @@ namespace Garage2.Controllers
             return View(types);
         }
 
-        public async Task<IActionResult> TotalCostInGarage()
-        {
-            var contractString = TempData["contract"] as string;
-            var contract = JsonConvert.DeserializeObject<ParkingContract>(contractString) as ParkingContract;
-            var vehicles = _context.ParkedVehicles.ToList();
-            var TotalCost = 0.0;
-            var currentTime = DateTime.Now;
-
-            for (int i = 0; i < vehicles.Count; i++)
-            {
-                var parkingDuration = currentTime - contract.ParkingDate;
-                float cost = 50 * parkingDuration.Days;
-                var durationWithDaysRemoved = parkingDuration - new TimeSpan(parkingDuration.Days * TimeSpan.TicksPerDay);
-                cost += (float)durationWithDaysRemoved.TotalMinutes * minutePrice;
-                TotalCost += cost;
-
-            }
-            return View(TotalCost);
-        }
-
         public async Task<IActionResult> GetStatistics()
         {
             // How many vehicle in vary types
             Dictionary<VehicleType, int> types = new Dictionary<VehicleType, int>();
-            ParkedVehicle[] vehicles =  _context.ParkedVehicles.ToArray();
+            ParkedVehicle[] vehicles = _context.ParkedVehicles.ToArray();
 
             for (int i = 0; i < vehicles.Length; i++)
             {
-                if (_context.ParkedVehicles.Count() > 0 )
+                if (_context.ParkedVehicles.Count() > 0)
                 {
                     var typeName = vehicles[i].Type;
                     if (types.ContainsKey(typeName))
@@ -373,6 +361,40 @@ namespace Garage2.Controllers
 
             }
 
+            int Wheel = GetWheelCount(vehicles);
+
+            //Total Cost
+            decimal TotalCost = GetTotalParkingCost();
+
+            //How many vehicles with white color & 4 wheels
+            int WhiteColor = _context.ParkedVehicles.Where(v => v.Colour.ToLower().Equals("white") 
+                                                           && v.NumberOfWheels == 4).Count();
+
+            var model = new Tuple<Dictionary<VehicleType, int>, int, decimal, int>(types, Wheel, TotalCost, WhiteColor);
+
+            return View(model);
+        }
+
+        private decimal GetTotalParkingCost()
+        {
+            var contracts = _context.Contracts.ToArray();
+            var TotalCost = 0.0M;
+            var currentTime = DateTime.Now;
+            for (int i = 0; i < contracts.Length; i++)
+            {
+                var contract = contracts[i];
+                TimeSpan parkingDuration;
+                decimal cost;
+                GetParkingCost(contract, out currentTime, out parkingDuration, out cost);
+                TotalCost += cost;
+
+            }
+
+            return TotalCost;
+        }
+
+        private static int GetWheelCount(ParkedVehicle[] vehicles)
+        {
             // Total wheels
             int Wheel = 0;
             foreach (var vehicle in vehicles)
@@ -381,39 +403,7 @@ namespace Garage2.Controllers
 
             }
 
-            //Total Cost
-            var contractString = TempData["contract"] as string;
-            var contract = JsonConvert.DeserializeObject<ParkingContract>(contractString) as ParkingContract;
-            var TotalCost = 0.0;
-            var currentTime = DateTime.Now;
-            if (contract == null )
-            {
-                throw new Exception("JsonConvert failed to convert TempData");
-            }
-            for (int i = 0; i < vehicles.Length; i++)
-            {
-                var parkingDuration = currentTime - contract.ParkingDate;
-                float cost = 50 * parkingDuration.Days;
-                var durationWithDaysRemoved = parkingDuration - new TimeSpan(parkingDuration.Days * TimeSpan.TicksPerDay);
-                cost += (float)durationWithDaysRemoved.TotalMinutes * minutePrice;
-                TotalCost += cost;
-
-            }
-
-            //How many vehicles with white color & 4 wheels
-            int WhiteColor = 0;
-            foreach (var vehicle in vehicles)
-            {
-                if(vehicle.Colour == "White" && vehicle.NumberOfWheels == 4)
-                {
-                    WhiteColor += 1;
-                }
-
-            }
-
-            var model = new Tuple<Dictionary<VehicleType, int>, int , double, int >(types, Wheel, TotalCost, WhiteColor);
-
-            return View(model);
+            return Wheel;
         }
     }
 }
