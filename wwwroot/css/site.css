@@ -60,8 +60,12 @@ html {
 
 body {
     /* Margin bottom by footer height */
-    margin-bottom: 60px;
-   
+    /*margin-bottom: 60px;*/
+    background-repeat: no-repeat;
+    background-image: url('../parkering imag/rainbow-wave-design--powerpoint-backgrounds[1].jpg');
+    background-attachment: scroll;
+    background-position: center center;
+    background-size: cover;
 }
 .footer {
   position: absolute;
