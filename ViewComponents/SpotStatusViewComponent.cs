@@ -37,11 +37,13 @@ namespace Garage2.ViewComponents
             var vehicles = _context.ParkedVehicles.ToList();
             for (var i = 0; i < vehicles.Count(); i++)
             {
-                var spot = new ParkSpot();
-                spot.ParkedVehicles = new ParkedVehicle[3];
-                spot.ParkedVehicles[0] = vehicles[i];
-                spot.VehicleCount = 1;
-                parkSpots[i] = spot;
+                var vehicleIsMotorcycle = vehicles[i].Type == VehicleType.Motorcycle;
+                var spot = ParkingSpotContainer.GetAvailableSpot(parkSpots, vehicleIsMotorcycle);
+
+                spot.Park(vehicles[i]);
+                spot.VehicleCount += 1;
+                spot.HasMotorcycles = vehicleIsMotorcycle;
+                parkSpots[spot.Id] = spot;
             }
             ParkingSpotContainer.IsInitialized = true;
         }

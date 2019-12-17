@@ -12,6 +12,7 @@ namespace Garage2.Data
         private static ParkSpot[] parkSpots;
         public static bool IsInitialized { get; set; }
         private static ParkSpot FirstAvailableSpot;
+        private static int nextSpotId = 0;
 
         public static ParkSpot[] GetParkSpots(IConfiguration configuration)
         {
@@ -25,8 +26,17 @@ namespace Garage2.Data
 
         public static bool SpotIsAvailable(ParkSpot spot, bool forMotorcycle)
         {
-            if (spot.VehicleCount == 0 || (forMotorcycle && spot.HasMotorcycles && spot.VehicleCount < 3))
+            if (spot == null || spot.VehicleCount == 0 || (forMotorcycle && spot.HasMotorcycles && spot.VehicleCount < 3))
+            {
+                if (spot == null)
+                {
+                    spot = new ParkSpot(nextSpotId);
+                    parkSpots[nextSpotId] = FirstAvailableSpot = spot;
+                    nextSpotId++;
+                }
+                FirstAvailableSpot = spot;
                 return true;
+            }
             else
                 return false;
         }
@@ -37,7 +47,6 @@ namespace Garage2.Data
             {
                 if (SpotIsAvailable(spot, forMotorcycle))
                 {
-                    FirstAvailableSpot = spot;
                     return true;
                 }
             }
@@ -46,7 +55,7 @@ namespace Garage2.Data
 
         public static ParkSpot GetAvailableSpot(ParkSpot[] spots, bool forMotorcycle)
         {
-            if (SpotIsAvailable(FirstAvailableSpot, forMotorcycle))
+            if (FirstAvailableSpot != null && SpotIsAvailable(FirstAvailableSpot, forMotorcycle))
                 return FirstAvailableSpot;
             if (SpotIsAvailable(spots, forMotorcycle))
                     return FirstAvailableSpot;
@@ -57,7 +66,7 @@ namespace Garage2.Data
         {
             foreach (var spot in parkSpots)
             {
-                if (spot != null && spot.ParkedVehicles.Any(v => v.RegistrationNumber == vehicle.RegistrationNumber))
+                if (spot != null && spot.ParkedVehicles.Contains(vehicle))
                     return spot;
             }
             return null;

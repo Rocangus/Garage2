@@ -10,17 +10,20 @@ using Garage2.Data;
 using Garage2.ViewModels;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
+using Microsoft.Extensions.Configuration;
 
 namespace Garage2.Controllers
 {
     public class VehiclesController : Controller
     {
         private GarageContext _context;
+        private IConfiguration _configuration;
         private float minutePrice = 0.05f;
 
-        public VehiclesController(GarageContext context)
+        public VehiclesController(GarageContext context, IConfiguration configuration)
         {
             _context = context;
+            _configuration = configuration;
         }
 
         // GET: Vehicle/Details
@@ -148,6 +151,10 @@ namespace Garage2.Controllers
             if (ModelState.IsValid)
             {
                 var vehicle = new ParkedVehicle();
+                ParkSpot spot = ParkingSpotContainer.GetAvailableSpot(ParkingSpotContainer.GetParkSpots(_configuration),
+                    viewModel.Type == VehicleType.Motorcycle);
+                if (spot == null)
+                    return View(); // RedirectToAction (GarageFull)
                 //populate all fields from viewModel
                 vehicle.RegistrationNumber = viewModel.RegistrationNumber;
                 vehicle.Type = viewModel.Type;
@@ -157,10 +164,13 @@ namespace Garage2.Controllers
                 vehicle.NumberOfWheels = viewModel.NumberOfWheels;
 
                 _context.Add(vehicle);
+                spot.VehicleCount += 1;
+                spot.HasMotorcycles = viewModel.Type == VehicleType.Motorcycle;
+                spot.Park(vehicle);
                 _context.Add(new ParkingContract()
                 {
                     Vehicle = vehicle,
-                    ParkingDate = DateTime.Today
+                    ParkingDate = DateTime.Now
                 });
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -204,6 +214,9 @@ namespace Garage2.Controllers
                 _context.ParkedVehicles.Remove(vehicle);
                 await _context.SaveChangesAsync();
             }
+
+            var spot = ParkingSpotContainer.FindSpotByVehicle(vehicle);
+            spot.Unpark(vehicle);
 
             TempData["vehicle"] = JsonConvert.SerializeObject(vehicle);
             TempData["contract"] = JsonConvert.SerializeObject(contract);
