@@ -1,14 +1,14 @@
-﻿@model Tuple<Dictionary<VehicleType, int>, int, decimal, int>
+﻿@model Tuple<Dictionary<VehicleType, int>, int, decimal, int, int, int, int>
 @{
     ViewData["Title"] = "GetStatistics";
 }
 
 <h1>Get Statistics</h1>
-<hr />
 
+
+<hr />
 <div>
-    <h3>How many types of each Vehicles</h3>
-    <hr />
+    <h3>How many types of each vehicles</h3>
     <span><strong>Busses: </strong>@Model.Item1.GetValueOrDefault(VehicleType.Bus)</span><br />
     <span><strong>Cars: </strong>@Model.Item1.GetValueOrDefault(VehicleType.Car)</span><br />
     <span><strong>Motorcycles: </strong>@Model.Item1.GetValueOrDefault(VehicleType.Motorcycle)</span><br />
@@ -17,25 +17,39 @@
 <hr />
 
 <div>
-    <h3>Total Wheels</h3>
-    
+    <h3>Total parking wheels </h3>
+
     <span>@Model.Item2</span>
 
 </div>
 <hr />
 
 <div>
-    <h3>Total Parking Costs</h3>
-    
+    <h3>Total parking costs</h3>
+
     <span>@System.Math.Round(Model.Item3, 2)</span>
 
 </div>
 <hr />
 <div>
-    <h3>How many vehicles with white color & 4 wheels</h3>
+    <h3>How many vehicles by colors </h3>
 
-    <span>@Model.Item4</span>
+
+    <span><strong>White: </strong><span>@Model.Item4</span><br />
+    <spa><strong>Black: </strong><span>@Model.Item5</span><br />
+    <spa><strong>Red: </strong><span>@Model.Item6</span><br />
+    <spa><strong>Blue: </strong><span>@Model.Item7</span><br />
+
 
 </div>
+
+<hr />
+@await Component.InvokeAsync("SpotStatus")
+<br>
+<canvas style="background-color: forestgreen"></canvas><span>Free</span>
+<br>
+<canvas style="background-color: gold"></canvas><span>Not Full</span>
+<br>
+<canvas style="background-color: red"></canvas><span>Full</span>
 <hr />
 
