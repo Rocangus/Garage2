@@ -282,11 +282,13 @@ namespace Garage2.Controllers
             //Total Cost
             decimal TotalCost = GetTotalParkingCost();
 
-            //How many vehicles with white color & 4 wheels
-            int WhiteColor = _context.ParkedVehicles.Where(v => v.Colour.ToLower().Equals("white") 
-                                                           && v.NumberOfWheels == 4).Count();
+            //How many vehicles with color 
+            int WhiteColor = _context.ParkedVehicles.Where(v => v.Colour.ToLower().Equals("white")).Count();
+            int BlackColor = _context.ParkedVehicles.Where(v => v.Colour.ToLower().Equals("black")).Count();
+            int RedColor = _context.ParkedVehicles.Where(v => v.Colour.ToLower().Equals("red")).Count();
+            int BlueColor = _context.ParkedVehicles.Where(v => v.Colour.ToLower().Equals("blue")).Count();
 
-            var model = new Tuple<Dictionary<VehicleType, int>, int, decimal, int>(types, Wheel, TotalCost, WhiteColor);
+            var model = new Tuple<Dictionary<VehicleType, int>, int, decimal, int, int ,int, int>(types, Wheel, TotalCost, WhiteColor, BlackColor, RedColor, BlueColor);
 
             return View(model);
         }
