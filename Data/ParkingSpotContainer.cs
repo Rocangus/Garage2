@@ -97,7 +97,7 @@ namespace Garage2.Data
             lastSequenceStart = start;
             var i = start;
             var numberAvailable = 0;
-            while (i < parkSpots.Length && SpotIsAvailable(parkSpots[i], false) && numberAvailable <= numberRequired)
+            while (i < parkSpots.Length && SpotIsAvailable(parkSpots[i], false) && numberAvailable < numberRequired)
             {
                 numberAvailable++;
                 i++;
