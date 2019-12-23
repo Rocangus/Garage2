@@ -100,7 +100,7 @@ namespace Garage2.Controllers
             switch (sortOrder)
             {
                 case "type_desc":
-                    viewModels = viewModels.OrderByDescending(s => s.Type).ToList();
+                    viewModels =  viewModels.OrderByDescending(s => s.Type).ToList();
                     break;
                 case "RegistrationNumber":
                     viewModels = viewModels.OrderBy(s => s.RegistrationNumber).ToList();
