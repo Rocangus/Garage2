@@ -175,22 +175,24 @@ namespace Garage2.Controllers
 
                 }
                 int startOfSpotSequence;
-                if (viewModel.Type != VehicleType.Motorcycle && ParkingSpotContainer.FindConsecutiveSpots(numberRequired, out startOfSpotSequence))
+                if (viewModel.Type == VehicleType.Motorcycle)
+                {
+                    {
+                        var spot = ParkingSpotContainer.GetAvailableSpot(ParkingSpotContainer.GetParkSpots(_configuration), true);
+                        if (spot != null)
+                        {
+                            PopulateVehicleFromViewModel(viewModel, vehicle);
+                            spot.Park(vehicle);
+                            spot.VehicleCount++;
+                            spot.HasMotorcycles = true;
+                        }
+                    }
+                }
+                else if (viewModel.Type != VehicleType.Motorcycle && ParkingSpotContainer.FindConsecutiveSpots(numberRequired, out startOfSpotSequence))
                 {
                     PopulateVehicleFromViewModel(viewModel, vehicle);
                     ParkingSpotContainer.ParkOnMultipleSpots(startOfSpotSequence, numberRequired, vehicle);
 
-                }
-                else
-                {
-                    var spot = ParkingSpotContainer.GetAvailableSpot(ParkingSpotContainer.GetParkSpots(_configuration), true);
-                    if (spot != null)
-                    {
-                        PopulateVehicleFromViewModel(viewModel, vehicle);
-                        spot.Park(vehicle);
-                        spot.VehicleCount++;
-                        spot.HasMotorcycles = true;
-                    }
                 }
                 _context.Add(vehicle);
                 _context.Add(new ParkingContract()
@@ -298,35 +300,32 @@ namespace Garage2.Controllers
         public async Task<IActionResult> GetStatistics()
         {
             // How many vehicle in vary types
-            Dictionary<VehicleType, int> types = new Dictionary<VehicleType, int>();
-            ParkedVehicle[] vehicles = _context.ParkedVehicles.ToArray();
+            var vehicles = await _context.ParkedVehicles.ToArrayAsync();
 
-            for (int i = 0; i < vehicles.Length; i++)
+            var vehicleTypes = vehicles.Select(v => v.Type).Distinct();
+            var typeCounts = new Dictionary<VehicleType, int>();
+            foreach (var type in vehicleTypes)
             {
-                if (_context.ParkedVehicles.Count() > 0)
-                {
-                    var typeName = vehicles[i].Type;
-                    if (types.ContainsKey(typeName))
-                        types[typeName] += 1;
-                    else
-                        types[typeName] = 1;
-
-                }
-
+                var count = vehicles.Where(v => v.Type == type).Count();
+                typeCounts.Add(type, count);
             }
 
-            int Wheel = GetWheelCount(vehicles);
+            int Wheel = vehicles.Sum(v => v.NumberOfWheels);
 
             //Total Cost
             decimal TotalCost = GetTotalParkingCost();
+            
 
             //How many vehicles with color 
-            int WhiteColor = _context.ParkedVehicles.Where(v => v.Colour.ToLower().Equals("white")).Count();
-            int BlackColor = _context.ParkedVehicles.Where(v => v.Colour.ToLower().Equals("black")).Count();
-            int RedColor = _context.ParkedVehicles.Where(v => v.Colour.ToLower().Equals("red")).Count();
-            int BlueColor = _context.ParkedVehicles.Where(v => v.Colour.ToLower().Equals("blue")).Count();
+            var colours = vehicles.Select(v => v.Colour).Distinct();
+            var colourCounts = new Dictionary<string, int>();
+            foreach (var colour in colours)
+            {
+                var count = vehicles.Where(v => v.Colour == colour).Count();
+                colourCounts.Add(colour, count);
+            }
 
-            var model = new Tuple<Dictionary<VehicleType, int>, int, decimal, int, int ,int, int>(types, Wheel, TotalCost, WhiteColor, BlackColor, RedColor, BlueColor);
+            var model = new Tuple<Dictionary<VehicleType, int>, int, decimal, Dictionary<string, int>>(typeCounts, Wheel, TotalCost, colourCounts);
 
             return View(model);
         }
@@ -349,17 +348,5 @@ namespace Garage2.Controllers
             return TotalCost;
         }
 
-        private static int GetWheelCount(ParkedVehicle[] vehicles)
-        {
-            // Total wheels
-            int Wheel = 0;
-            foreach (var vehicle in vehicles)
-            {
-                Wheel = Wheel + vehicle.NumberOfWheels;
-
-            }
-
-            return Wheel;
-        }
     }
 }
