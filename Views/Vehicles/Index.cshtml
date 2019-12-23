@@ -1,44 +1,108 @@
-﻿
+﻿@model IEnumerable<VehicleSummaryViewModel>
 @{
 
-    <div class="container">
-        <div class="row">
+    <h1>Garage index</h1>
+    <hr />
+    @await Component.InvokeAsync("SpotStatus")
+    <hr />
+    <form asp-action="Index" >
 
-            <dv class="col-md-3">
-                <label class=""> Registation No :</label>
-            </dv>
+        <div class="input-group mb-3">
 
-            <dv class="col-md-3">
-                <label class=""> Vehical type :</label>
-            </dv>
-            <dv class="col-md-3">
-                <label class=""> Parking Time :</label>
-            </dv>
+            <input type="text" name="RegNum" class="form-control" placeholder="Search by registration number" />
 
-            <dv class="col-md-3">
-                <label class=""> Total Cost  :</label>
-            </dv>
+            <div class="input-group-append">
 
-        </div>
+                <select name="type" asp-items="@Html.GetEnumSelectList<VehicleType>()" class="form-control">
+                    <option selected="selected" value=""> Select</option>
 
-        <div class="row">
-            <dv class="col-md-3">
-                <label class=""> 444</label>
-            </dv>
+                </select>
 
-            <dv class="col-md-3">
-                <label class=""> 888 :</label>
-            </dv>
-            <dv class="col-md-3">
-                <label class=""> 44 :</label>
-            </dv>
+            </div>
 
-            <dv class="col-md-3">
-                <label class=""> T55</label>
-            </dv>
+            <div class="input-group-append">
+
+                <button type="submit" class="btn btn-primary"><i class="fa fa-search">&emsp;Search</i></button>
+
+            </div>
 
         </div>
 
-    </div>
+    </form>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.ActionLink("Registration Number", "Index", new { sortOrder = ViewBag.RegistrationNumberSortParm })
+
+                </th>
+                <th>
+                    @Html.ActionLink("Type", "Index", new { sortOrder = ViewBag.TypeSortParm })
+                </th>
+
+                <th>
+                    @Html.ActionLink("Colour", "Index", new { sortOrder = ViewBag.ColourSortParm })
+                </th>
+
+                <th>
+                    @Html.ActionLink("Parking time", "Index", new { sortOrder = ViewBag.ParkingTimeSortParm })
+                </th>
+              
+
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            @foreach (var item in Model)
+
+            {
+                <tr>
+
+                    <td>
+
+                        @Html.DisplayFor(modelItem => item.RegistrationNumber)
+
+                    </td>
+
+                    <td>
+
+                        @Html.DisplayFor(modelItem => item.Type)
+
+                    </td>
+
+                    <td>
+
+                        @Html.DisplayFor(modelItem => item.Colour)
+
+                    </td>
+
+                    <td>
+
+                        @item.ParkingTime.Days:@item.ParkingTime.Hours:@item.ParkingTime.Minutes
+
+                    </td>
+
+                    <td>
+                        <a asp-action="UnPark" asp-route-regNum="@item.RegistrationNumber">UnPark</a>
+
+                    </td>
+
+                    <td>
+                        <a asp-action="Details" asp-route-regNum="@item.RegistrationNumber">Details</a>
+
+                    </td>
+
+                </tr>
+
+
+            }
+
+        </tbody>
+
+
+    </table>
 
 }

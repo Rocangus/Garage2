@@ -1,15 +1,13 @@
-﻿@model Garage2.Models.ParkedVehicle
+﻿@model ParkedVehicle
 
 
 @{
-
     ViewData["Title"] = "Park";
-
 }
 
-<h1>Park</h1>
+    <h1>Park Vehicle</h1>
 
-<h4>Park Vehicle</h4>
+@*<h4>Park Vehicle</h4>*@
 
 <hr />
 <div class="row">
@@ -34,7 +32,9 @@
 
                 <label asp-for="Type" class="control-label"></label>
 
-                <select asp-for="Type" asp-items="Html.GetEnumSelectList<VehicleType>()" class="form-control"></select>
+                <select asp-for="Type" asp-items="Html.GetEnumSelectList<VehicleType>()" class="form-control">
+                    
+                </select>
 
                 <span asp-validation-for="Type" class="text-danger"></span>
 

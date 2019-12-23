@@ -10,6 +10,7 @@ namespace Garage2.Models
     {
         [Key]
         [RegularExpression(@"^([A-Z]|[a-z]){3}\d{2,3}([A-Z]|[a-z]){0,1}")]
+        [Required]
         public string RegistrationNumber { get; set; }
 
         [Required]
@@ -26,5 +27,12 @@ namespace Garage2.Models
 
         [Range(2, 18)]
         public int NumberOfWheels { get; set; }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is ParkedVehicle vehicle)
+                return RegistrationNumber.Equals(vehicle.RegistrationNumber);
+            return false;
+        }
     }
 }

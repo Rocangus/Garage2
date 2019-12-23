@@ -1,0 +1,34 @@
+﻿@model Tuple<IEnumerable<ParkSpot>, int>
+
+
+<h3>Available spaces</h3>
+@do
+{
+    int takenSpotCount = 0;
+    foreach (var spot in Model.Item1)
+    {
+
+        if (spot == null || spot.VehicleCount == 0)
+        {
+
+            <canvas style="background-color: forestgreen"></canvas>
+        }
+        else
+        {
+            if (spot.HasMotorcycles && spot.VehicleCount < 3)
+            {
+                <canvas style="background-color: gold"></canvas>
+                takenSpotCount++;
+            }
+            else
+            {
+                <canvas style="background-color: red"></canvas>
+                takenSpotCount++;
+            }
+        }
+
+    }
+    <br />
+    <span>@(Model.Item2 - takenSpotCount) of @Model.Item2 spaces available.</span>
+    
+} while (false);

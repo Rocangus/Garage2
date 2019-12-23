@@ -55,6 +55,24 @@ namespace Garage2.Migrations
                             Model = "Fabia Combi 1.2 TSI",
                             NumberOfWheels = 4,
                             Type = 0
+                        },
+                        new
+                        {
+                            RegistrationNumber = "AAA123",
+                            Colour = "White",
+                            Manufacturer = "MAN",
+                            Model = "Buss",
+                            NumberOfWheels = 6,
+                            Type = 2
+                        },
+                        new
+                        {
+                            RegistrationNumber = "HUJ63E",
+                            Colour = "Blue",
+                            Manufacturer = "BMW",
+                            Model = "S1000RR",
+                            NumberOfWheels = 2,
+                            Type = 1
                         });
                 });
 
@@ -81,8 +99,20 @@ namespace Garage2.Migrations
                         new
                         {
                             Id = 1,
-                            ParkingDate = new DateTime(2019, 8, 30, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ParkingDate = new DateTime(2019, 12, 13, 10, 35, 26, 0, DateTimeKind.Unspecified),
                             VehicleRegistrationNumber = "PAY276"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            ParkingDate = new DateTime(2019, 12, 13, 8, 29, 47, 0, DateTimeKind.Unspecified),
+                            VehicleRegistrationNumber = "AAA123"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            ParkingDate = new DateTime(2019, 12, 3, 14, 2, 33, 0, DateTimeKind.Unspecified),
+                            VehicleRegistrationNumber = "HUJ63E"
                         });
                 });
 
