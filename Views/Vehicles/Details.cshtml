@@ -1,0 +1,93 @@
+﻿@model VehicaleSummaryDetailsViewModel
+@{
+    <h1>Vehicle Details</h1>
+ }
+
+<div>
+
+
+    <hr />
+
+    <dl class="row">
+
+        <dt class="col-sm-2">
+
+            @Html.DisplayNameFor(model => model.RegistrationNumber)
+
+        </dt>
+
+        <dd class="col-sm-10">
+
+            @Model.RegistrationNumber
+
+        </dd>
+
+        <dt class="col-sm-2">
+
+            @Html.DisplayNameFor(model => model.Type)
+
+        </dt>
+
+        <dd class="col-sm-10">
+
+            @Model.Type
+
+        </dd>
+
+        <dt class="col-sm-2">
+
+            @Html.DisplayNameFor(model => model.Colour)
+
+        </dt>
+
+        <dd class="col-sm-10">
+
+            @Model.Colour
+
+        </dd>
+
+        <dt class="col-sm-2">
+
+            @Html.DisplayNameFor(model => model.Model)
+
+        </dt>
+
+        <dd class="col-sm-10">
+
+            @Model.Model
+
+        </dd>
+
+        <dt class="col-sm-2">
+
+            @Html.DisplayNameFor(model => model.Manufacturer)
+
+        </dt>
+
+        <dd class="col-sm-10">
+
+            @Model.Manufacturer
+
+        </dd>
+
+        <dt class="col-sm-2">
+
+            @Html.DisplayNameFor(model => model.ParkingTime)
+
+        </dt>
+
+        <dd class="col-sm-10">
+
+            @Model.ParkingTime.ToString(@"dd\:hh\:mm")
+
+        </dd>
+
+    </dl>
+
+</div>
+
+<div>
+
+    <a asp-action="Index">Back to List</a>
+
+</div>

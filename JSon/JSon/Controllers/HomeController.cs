@@ -1,0 +1,43 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using JSon.Models;
+using Microsoft.Extensions.Configuration;
+using JSon.Services;
+
+namespace JSon.Controllers
+{
+    public class HomeController : Controller
+    {
+        private readonly ILogger<HomeController> _logger;
+        private readonly IConfiguration config;
+        private readonly ISettings settings;
+
+        public HomeController(ILogger<HomeController> logger, IConfiguration config, ISettings settings)
+        {
+            _logger = logger;
+            this.config = config;
+            this.settings = settings;
+        }
+
+        public IActionResult Index()
+        {
+            return View(settings);
+        }
+
+        public IActionResult Privacy()
+        {
+            return View();
+        }
+
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        public IActionResult Error()
+        {
+            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+    }
+}
