@@ -27,6 +27,7 @@ namespace Garage2.Models
 
         [Range(2, 18)]
         public int NumberOfWheels { get; set; }
+        public DateTime ParkingDate { get; set; }
 
         public override bool Equals(object obj)
         {

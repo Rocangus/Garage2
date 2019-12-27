@@ -17,6 +17,10 @@
     <Compile Remove="Migrations\20191213152707_ChangedVehicle3Date.Designer.cs" />
     <Compile Remove="Migrations\20191218074905_RequiredRegistrationNumber.cs" />
     <Compile Remove="Migrations\20191218074905_RequiredRegistrationNumber.Designer.cs" />
+    <Compile Remove="Migrations\20191218085716_MoveParkingDateIntoVehicle.cs" />
+    <Compile Remove="Migrations\20191218085716_MoveParkingDateIntoVehicle.Designer.cs" />
+    <Compile Remove="Migrations\20191218085807_MoveParkingDateIntoVehicle.cs" />
+    <Compile Remove="Migrations\20191218085807_MoveParkingDateIntoVehicle.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>
