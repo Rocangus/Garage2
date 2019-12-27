@@ -19,6 +19,44 @@ namespace Garage2.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+            modelBuilder.Entity("Garage2.Models.Member", b =>
+                {
+                    b.Property<int>("MemberId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("CityAddress")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FirstName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LastName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("MemberId");
+
+                    b.ToTable("Members");
+
+                    b.HasData(
+                        new
+                        {
+                            MemberId = 1,
+                            CityAddress = "Lindevägen 60 Enskede Gård",
+                            Email = "henning.oden@outlook.com",
+                            FirstName = "Henning",
+                            LastName = "Odén",
+                            PhoneNumber = "0739753838"
+                        });
+                });
+
             modelBuilder.Entity("Garage2.Models.ParkedVehicle", b =>
                 {
                     b.Property<string>("RegistrationNumber")
@@ -31,6 +69,9 @@ namespace Garage2.Migrations
                     b.Property<string>("Manufacturer")
                         .HasColumnType("nvarchar(30)")
                         .HasMaxLength(30);
+
+                    b.Property<int>("MemberId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Model")
                         .HasColumnType("nvarchar(60)")
@@ -47,6 +88,8 @@ namespace Garage2.Migrations
 
                     b.HasKey("RegistrationNumber");
 
+                    b.HasIndex("MemberId");
+
                     b.ToTable("ParkedVehicles");
 
                     b.HasData(
@@ -55,58 +98,21 @@ namespace Garage2.Migrations
                             RegistrationNumber = "PAY276",
                             Colour = "Red",
                             Manufacturer = "Skoda",
+                            MemberId = 1,
                             Model = "Fabia Combi 1.2 TSI",
                             NumberOfWheels = 4,
-                            ParkingDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ParkingDate = new DateTime(2019, 12, 26, 19, 8, 27, 0, DateTimeKind.Unspecified),
                             Type = 0
-                        },
-                        new
-                        {
-                            RegistrationNumber = "AAA123",
-                            Colour = "White",
-                            Manufacturer = "MAN",
-                            Model = "Buss",
-                            NumberOfWheels = 6,
-                            ParkingDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Type = 2
-                        },
-                        new
-                        {
-                            RegistrationNumber = "HUJ63E",
-                            Colour = "Blue",
-                            Manufacturer = "BMW",
-                            Model = "S1000RR",
-                            NumberOfWheels = 2,
-                            ParkingDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Type = 1
                         });
                 });
 
-            modelBuilder.Entity("Garage2.Models.ParkingContract", b =>
+            modelBuilder.Entity("Garage2.Models.ParkedVehicle", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<DateTime>("ParkingDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("VehicleRegistrationNumber")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("VehicleRegistrationNumber");
-
-                    b.ToTable("Contracts");
-                });
-
-            modelBuilder.Entity("Garage2.Models.ParkingContract", b =>
-                {
-                    b.HasOne("Garage2.Models.ParkedVehicle", "Vehicle")
-                        .WithMany()
-                        .HasForeignKey("VehicleRegistrationNumber");
+                    b.HasOne("Garage2.Models.Member", null)
+                        .WithMany("OwnedVehicles")
+                        .HasForeignKey("MemberId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

@@ -5,6 +5,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Migrations\20191211133919_Initial.cs" />
+    <Compile Remove="Migrations\20191211133919_Initial.Designer.cs" />
     <Compile Remove="Migrations\20191211154023_DataAddTest.cs" />
     <Compile Remove="Migrations\20191211154023_DataAddTest.Designer.cs" />
     <Compile Remove="Migrations\20191212081019_AddBaseData.cs" />
@@ -15,12 +17,22 @@
     <Compile Remove="Migrations\20191213141745_AdditionalData.Designer.cs" />
     <Compile Remove="Migrations\20191213152707_ChangedVehicle3Date.cs" />
     <Compile Remove="Migrations\20191213152707_ChangedVehicle3Date.Designer.cs" />
+    <Compile Remove="Migrations\20191213153531_AddInterestingData.cs" />
+    <Compile Remove="Migrations\20191213153531_AddInterestingData.Designer.cs" />
     <Compile Remove="Migrations\20191218074905_RequiredRegistrationNumber.cs" />
     <Compile Remove="Migrations\20191218074905_RequiredRegistrationNumber.Designer.cs" />
     <Compile Remove="Migrations\20191218085716_MoveParkingDateIntoVehicle.cs" />
     <Compile Remove="Migrations\20191218085716_MoveParkingDateIntoVehicle.Designer.cs" />
     <Compile Remove="Migrations\20191218085807_MoveParkingDateIntoVehicle.cs" />
     <Compile Remove="Migrations\20191218085807_MoveParkingDateIntoVehicle.Designer.cs" />
+    <Compile Remove="Migrations\20191218085930_MoveParkingDateIntoVehicle.cs" />
+    <Compile Remove="Migrations\20191218085930_MoveParkingDateIntoVehicle.Designer.cs" />
+    <Compile Remove="Migrations\20191227103116_AddedMemberTable.cs" />
+    <Compile Remove="Migrations\20191227103116_AddedMemberTable.Designer.cs" />
+    <Compile Remove="Migrations\20191227103315_AddedMemberTable.cs" />
+    <Compile Remove="Migrations\20191227103315_AddedMemberTable.Designer.cs" />
+    <Compile Remove="Migrations\20191227103829_NewWithMembers.cs" />
+    <Compile Remove="Migrations\20191227103829_NewWithMembers.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>
