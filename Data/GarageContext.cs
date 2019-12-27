@@ -17,6 +17,8 @@ namespace Garage2.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Member>()
+                .HasAlternateKey(m => m.Email);
             Member member = new Member 
             { MemberId = 1, FirstName = "Henning",
               LastName = "Odén", Email = "henning.oden@outlook.com", 

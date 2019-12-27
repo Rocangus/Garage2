@@ -33,6 +33,8 @@
     <Compile Remove="Migrations\20191227103315_AddedMemberTable.Designer.cs" />
     <Compile Remove="Migrations\20191227103829_NewWithMembers.cs" />
     <Compile Remove="Migrations\20191227103829_NewWithMembers.Designer.cs" />
+    <Compile Remove="Migrations\20191227132132_KeyEmail.cs" />
+    <Compile Remove="Migrations\20191227132132_KeyEmail.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>
