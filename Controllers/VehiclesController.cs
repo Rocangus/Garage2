@@ -130,6 +130,26 @@ namespace Garage2.Controllers
             return model;
         }
 
+        // Get: Vehicle/ParkEmail
+        public IActionResult CheckEmail()
+        {
+            return View();
+        }
+
+        // Post: Vehicle/ParkEmail
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult CheckEmail(EmailAddress emailAddress)
+        {
+            var results = _context.Members.Where(m => m.Email == emailAddress.Email);
+            if (results.Any())
+            {
+                return RedirectToAction(nameof(Park));
+            }
+            return RedirectToAction(nameof(Index));
+        }
+
+
         // Get: Vehicle/Park
         public IActionResult Park()
         {
