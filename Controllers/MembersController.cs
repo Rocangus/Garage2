@@ -7,15 +7,19 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
+
 
 namespace Garage2.Controllers
 {
+
     public class MembersController: Controller
     {
-
+        private readonly IMapper mapper;
         private GarageContext _context;
-        public MembersController(GarageContext context)
+        public MembersController(GarageContext context, IMapper mapper)
         {
+            this.mapper = mapper;
             _context = context;
             
         }
@@ -67,11 +71,15 @@ namespace Garage2.Controllers
             return View();
         }
 
-        public IActionResult Register(MemberViewModel model)
+        public async Task<IActionResult> Register(MemberViewModel model)
         {
-            //var member = _context.
-            return RedirectToAction(nameof(Index));
-
+            if (ModelState.IsValid) {
+                var member = mapper.Map<Member>(model);
+                _context.Add(member);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            return View();
         }
     }
 }
