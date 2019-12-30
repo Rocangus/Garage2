@@ -59,5 +59,19 @@ namespace Garage2.Controllers
             }
             return RedirectToAction(nameof(Index));
         }
+
+        public IActionResult Register()
+
+        {
+
+            return View();
+        }
+
+        public IActionResult Register(MemberViewModel model)
+        {
+            //var member = _context.
+            return RedirectToAction(nameof(Index));
+
+        }
     }
 }
