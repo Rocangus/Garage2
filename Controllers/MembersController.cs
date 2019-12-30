@@ -34,6 +34,7 @@ namespace Garage2.Controllers
             {
                 var model = new MemberSummaryViewModel
                 {
+                    Id = member.MemberId,
                     FirstName = member.FirstName,
                     LastName = member.LastName
                 };
@@ -64,6 +65,13 @@ namespace Garage2.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        public async Task<IActionResult> Details(int id)
+        {
+            var member = _context.Members.Where(m => m.MemberId == id);
+            var model = await mapper.ProjectTo<MemberDetailsViewModel>(member).FirstOrDefaultAsync();
+            return View(model);
+        }
+
         [HttpGet]
         public IActionResult Register()
 
@@ -74,7 +82,7 @@ namespace Garage2.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Register(MemberViewModel model)
+        public async Task<IActionResult> Register(MemberRegisterViewModel model)
         {
             if (ModelState.IsValid) {
                 var member = mapper.Map<Member>(model);

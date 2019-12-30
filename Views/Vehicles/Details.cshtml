@@ -1,4 +1,4 @@
-﻿@model VehicaleSummaryDetailsViewModel
+﻿@model (VehicaleSummaryDetailsViewModel, bool)
 @{
     <h1>Vehicle Details</h1>
  }
@@ -12,73 +12,73 @@
 
         <dt class="col-sm-2">
 
-            @Html.DisplayNameFor(model => model.RegistrationNumber)
+            @Html.DisplayNameFor(model => model.Item1.RegistrationNumber)
 
         </dt>
 
         <dd class="col-sm-10">
 
-            @Model.RegistrationNumber
+            @Model.Item1.RegistrationNumber
 
         </dd>
 
         <dt class="col-sm-2">
 
-            @Html.DisplayNameFor(model => model.Type)
+            @Html.DisplayNameFor(model => model.Item1.Type)
 
         </dt>
 
         <dd class="col-sm-10">
 
-            @Model.Type
+            @Model.Item1.Type
 
         </dd>
 
         <dt class="col-sm-2">
 
-            @Html.DisplayNameFor(model => model.Colour)
+            @Html.DisplayNameFor(model => model.Item1.Colour)
 
         </dt>
 
         <dd class="col-sm-10">
 
-            @Model.Colour
+            @Model.Item1.Colour
 
         </dd>
 
         <dt class="col-sm-2">
 
-            @Html.DisplayNameFor(model => model.Model)
+            @Html.DisplayNameFor(model => model.Item1.Model)
 
         </dt>
 
         <dd class="col-sm-10">
 
-            @Model.Model
+            @Model.Item1.Model
 
         </dd>
 
         <dt class="col-sm-2">
 
-            @Html.DisplayNameFor(model => model.Manufacturer)
+            @Html.DisplayNameFor(model => model.Item1.Manufacturer)
 
         </dt>
 
         <dd class="col-sm-10">
 
-            @Model.Manufacturer
+            @Model.Item1.Manufacturer
 
         </dd>
 
         <dt class="col-sm-2">
 
-            @Html.DisplayNameFor(model => model.ParkingTime)
+            @Html.DisplayNameFor(model => model.Item1.ParkingTime)
 
         </dt>
 
         <dd class="col-sm-10">
 
-            @Model.ParkingTime.ToString(@"dd\:hh\:mm")
+            @Model.Item1.ParkingTime.ToString(@"dd\:hh\:mm")
 
         </dd>
 
@@ -87,7 +87,12 @@
 </div>
 
 <div>
-
-    <a asp-action="Index">Back to List</a>
-
+    @if (Model.Item2)
+    {
+        <a asp-controller="Members" asp-action="Index">Back to Member list</a>
+    }
+    else
+    {
+        <a asp-action="Index">Back to List</a>
+    }
 </div>

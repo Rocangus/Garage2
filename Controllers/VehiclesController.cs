@@ -29,7 +29,7 @@ namespace Garage2.Controllers
 
 
         // GET: Vehicle/Details
-        public async Task<IActionResult> Details(string RegNum)
+        public async Task<IActionResult> Details(string RegNum, bool fromMember)
         {
             //RegNum = "PAY276";
 
@@ -57,7 +57,7 @@ namespace Garage2.Controllers
             ModelSum.ParkingTime = vehicle.ParkingDate - DateTime.Now;
             // ModelSum.NumberOfWheels = vehicle.NumberOfWheels;
 
-            return View(ModelSum);
+            return View(( ModelSum, fromMember ));
 
         }
 

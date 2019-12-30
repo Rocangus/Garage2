@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Garage2.Models;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -7,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace Garage2.ViewModels
 {
-    public class MemberViewModel
+    public class MemberDetailsViewModel
     {
-        [Display (Name = "First Name")]
+        [Display(Name = "First Name")]
         public string FirstName { get; set; }
 
         [Display(Name = "Last Name")]
@@ -21,5 +22,6 @@ namespace Garage2.ViewModels
         public string Email { get; set; }
         [Display(Name = "Phone Number")]
         public string PhoneNumber { get; set; }
+        public ICollection<ParkedVehicle> OwnedVehicles { get; set; }
     }
 }
