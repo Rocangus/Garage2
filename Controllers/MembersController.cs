@@ -1,4 +1,5 @@
 ﻿using Garage2.Data;
+using Garage2.Models;
 using Garage2.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -40,5 +41,23 @@ namespace Garage2.Controllers
             return View(models);
         }
 
+        // Get: Members/ParkEmail
+        public IActionResult CheckEmail()
+        {
+            return View();
+        }
+
+        // Post: Members/ParkEmail
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult CheckEmail(EmailAddress emailAddress)
+        {
+            var results = _context.Members.Where(m => m.Email == emailAddress.Email);
+            if (results.Any())
+            {
+                return RedirectToAction(nameof(VehiclesController.Park), "Vehicles");
+            }
+            return RedirectToAction(nameof(Index));
+        }
     }
 }
