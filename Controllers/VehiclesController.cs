@@ -134,6 +134,7 @@ namespace Garage2.Controllers
         // Get: Vehicle/Park
         public IActionResult Park()
         {
+            TempData.Keep();
             return View();
 
         }
@@ -146,6 +147,8 @@ namespace Garage2.Controllers
             if (ModelState.IsValid)
             {
                 var vehicle = new ParkedVehicle();
+                var member = await _context.Members.Where(m => m.Email.Equals(TempData["Email"] as string)).FirstOrDefaultAsync();
+                vehicle.MemberId = member.MemberId;
                 int numberRequired;
                 switch (viewModel.Type)
                 {

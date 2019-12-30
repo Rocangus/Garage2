@@ -60,6 +60,8 @@ namespace Garage2.Controllers
             var results = _context.Members.Where(m => m.Email == emailAddress.Email);
             if (results.Any())
             {
+                TempData["email"] = emailAddress.Email;
+                TempData.Keep();
                 return RedirectToAction(nameof(VehiclesController.Park), "Vehicles");
             }
             return RedirectToAction(nameof(Index));

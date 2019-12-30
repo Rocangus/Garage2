@@ -44,7 +44,7 @@
     <h4>Owned vehicles</h4>
     @foreach(var vehicle in Model.OwnedVehicles)
     {
-        <span><strong>@vehicle.RegistrationNumber:</strong> @vehicle.Manufacturer @vehicle.Model <a asp-controller="Vehicles" asp-action="Details" asp-route-regNum="@vehicle.RegistrationNumber" asp-route-fromMember="true">Details</a></span>
+        <span><strong>@vehicle.RegistrationNumber:</strong> @vehicle.Manufacturer @vehicle.Model <a asp-controller="Vehicles" asp-action="Details" asp-route-regNum="@vehicle.RegistrationNumber" asp-route-fromMember="true">Details</a></span><br />
     }
 </div>
 <hr />
