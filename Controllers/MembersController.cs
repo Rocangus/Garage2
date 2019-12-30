@@ -64,6 +64,7 @@ namespace Garage2.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [HttpGet]
         public IActionResult Register()
 
         {
@@ -71,6 +72,8 @@ namespace Garage2.Controllers
             return View();
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(MemberViewModel model)
         {
             if (ModelState.IsValid) {
@@ -80,6 +83,15 @@ namespace Garage2.Controllers
                 return RedirectToAction(nameof(Index));
             }
             return View();
+        }
+
+        public IActionResult ValidateEmail(string email)
+        {
+            if(_context.Members.Any(m => m.Email == email)) 
+            {
+                return Json($"The email {email} is already in use.");
+            }
+            return Json(true);
         }
     }
 }
