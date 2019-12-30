@@ -9,6 +9,23 @@
 <p>
     <a asp-action="Register">Register Member</a>
 </p>
+
+<form asp-action="Index">
+
+    <div class="input-group mb-3">
+
+        <input type="text" name="name" class="form-control" placeholder="Search by name" />
+
+        <div class="input-group-append">
+
+            <button type="submit" class="btn btn-primary"><i class="fa fa-search">&emsp;Search</i></button>
+
+        </div>
+
+    </div>
+
+</form>
+
 <table class="table">
     <thead>
         <tr>
@@ -25,23 +42,24 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.FirstName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.LastName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Count)
-            </td>
-            <td>
-                @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a>
-                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.FirstName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.LastName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Count)
+                </td>
+                <td>
+                    @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
+                    <a asp-action="Details" asp-route-id="@item.Id">Details</a>
+                    @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
