@@ -378,5 +378,13 @@ namespace Garage2.Controllers
             return TotalCost;
         }
 
+        public IActionResult ValidateRegistrationNumber(string registrationNumber)
+        {
+            if (_context.ParkedVehicles.Any(m => m.RegistrationNumber == registrationNumber))
+            {
+                return Json($"The vehicle with registration number {registrationNumber} is already in the garage.");
+            }
+            return Json(true);
+        }
     }
 }
