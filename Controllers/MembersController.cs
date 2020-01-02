@@ -62,7 +62,7 @@ namespace Garage2.Controllers
             var result = _context.Members.FirstOrDefault(m => m.Email == emailAddress.Email);
             if (result != null)
             {
-                TempDataExtensions.Set(TempData, "email", result);
+                TempDataExtensions.Set(TempData, "member", result);
                 TempData.Keep();
                 return RedirectToAction(nameof(VehiclesController.Park), "Vehicles");
             }

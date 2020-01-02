@@ -186,7 +186,7 @@ namespace Garage2.Controllers
                 {
                     throw new ArgumentException("The value of the SelectItem selected was not non-zero.");
                 }
-                var member = TempDataExtensions.Get<Member>(TempData, "email");
+                var member = TempDataExtensions.Get<Member>(TempData, "member");
                 vehicle.MemberId = member.MemberId;
                 var vehicleType = await _context.VehicleTypes.Where(v => v.Id == vehicle.VehicleTypeId).FirstOrDefaultAsync();
                 int numberRequired;
