@@ -24,13 +24,15 @@ namespace Garage2.Controllers
             
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string name)
         {
-            var models = new List<MemberSummaryViewModel>();
+            var search = string.IsNullOrWhiteSpace(name) ?
+               await _context.Members.ToListAsync ()  :
+               await _context.Members.Where(m => (m.FirstName + " " + m.LastName).Contains(name)).ToListAsync();
 
-            var members = await _context.Members.ToListAsync();
+            var models = new List<MemberSummaryViewModel>();
             var vehicles = await _context.ParkedVehicles.ToListAsync();
-            foreach (var member in members)
+            foreach (var member in search)
             {
                 var model = new MemberSummaryViewModel
                 {
