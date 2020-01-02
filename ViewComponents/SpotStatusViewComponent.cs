@@ -37,19 +37,19 @@ namespace Garage2.ViewComponents
             var vehicles = _context.ParkedVehicles.ToList();
             for (var i = 0; i < vehicles.Count(); i++)
             {
-                if (vehicles[i].Type == VehicleType.Truck)
+                if (vehicles[i].VehicleTypeId == _context.VehicleTypes.FirstOrDefault(v=>v.Name == "Truck").Id)
                 {
                     ParkOnMultipleSpots(vehicles[i], 3);
                 }
                 else
                 {
-                    if (vehicles[i].Type == VehicleType.Bus)
+                    if (vehicles[i].VehicleTypeId == _context.VehicleTypes.FirstOrDefault(v => v.Name == "Bus").Id)
                     {
                         ParkOnMultipleSpots(vehicles[i], 2);
                     }
                     else
                     {
-                        var vehicleIsMotorcycle = vehicles[i].Type == VehicleType.Motorcycle;
+                        var vehicleIsMotorcycle = vehicles[i].VehicleTypeId == _context.VehicleTypes.FirstOrDefault(v => v.Name == "Motorcycle").Id;
                         var spot = ParkingSpotContainer.GetAvailableSpot(parkSpots, vehicleIsMotorcycle);
 
                         spot.Park(vehicles[i]);
