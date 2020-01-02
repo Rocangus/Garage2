@@ -74,16 +74,22 @@ namespace Garage2.Controllers
                 _context.ParkedVehicles :
                 _context.ParkedVehicles.Where(m => m.RegistrationNumber.Contains(RegNum));
 
+              /// member.OwnedVehicles = vehicles.Where(v => v.MemberId == member.MemberId).ToList();
+
+
+
+
             vehicles = type == null ?
                 vehicles :
                 vehicles.Where(m => m.Type == (VehicleType)type);
 
             var viewModels = new List<VehicleSummaryViewModel>();
+            IEnumerable<Member> members = _context.Members;
 
             foreach (ParkedVehicle vehicle in vehicles)
             {
 
-                VehicleSummaryViewModel viewModel = CreateSummaryViewModel(vehicle);
+                VehicleSummaryViewModel viewModel = CreateSummaryViewModel(vehicle, members);
 
                 viewModels.Add(viewModel);
             }
@@ -120,13 +126,15 @@ namespace Garage2.Controllers
 
         }
 
-        private static VehicleSummaryViewModel CreateSummaryViewModel(ParkedVehicle vehicle)
+        private VehicleSummaryViewModel CreateSummaryViewModel(ParkedVehicle vehicle, IEnumerable<Member> members)
         {
             var model = new VehicleSummaryViewModel();
+            var owner = members.FirstOrDefault(m => m.MemberId == vehicle.MemberId);
             model.Colour = vehicle.Colour;
             model.RegistrationNumber = vehicle.RegistrationNumber;
             model.ParkingTime = DateTime.Now - vehicle.ParkingDate;
             model.Type = vehicle.Type;
+            model.OwnerName = owner.FirstName + " " + owner.LastName;
             return model;
         }
 

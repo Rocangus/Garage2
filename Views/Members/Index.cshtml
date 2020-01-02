@@ -6,6 +6,33 @@
 
 <h1>Member Index</h1>
 
+
+<form asp-action="Index">
+
+    <div class="input-group mb-3">
+
+        <input type="text" name="Name" class="form-control" placeholder="Search by registration Name" />
+
+        <div class="input-group-append">
+
+            @*<select name="type" asp-items="@Html.GetEnumSelectList<VehicleType>()" class="form-control">
+                <option selected="selected" value=""> Select</option>
+
+            </select>*@
+
+        </div>
+
+        <div class="input-group-append">
+
+            <button type="submit" class="btn btn-primary"><i class="fa fa-search">&emsp;Search</i></button>
+
+        </div>
+
+    </div>
+
+</form>
+
+
 <p>
     <a asp-action="Register">Register Member</a>
 </p>

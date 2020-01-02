@@ -38,6 +38,11 @@
 
                 </th>
                 <th>
+                    @Html.ActionLink("Owner Name", "Index", new { sortOrder = ViewBag.RegistrationNumberSortParm })
+
+                </th>
+
+                <th>
                     @Html.ActionLink("Type", "Index", new { sortOrder = ViewBag.TypeSortParm })
                 </th>
 
@@ -48,7 +53,7 @@
                 <th>
                     @Html.ActionLink("Parking time", "Index", new { sortOrder = ViewBag.ParkingTimeSortParm })
                 </th>
-              
+
 
             </tr>
 
@@ -59,43 +64,51 @@
             @foreach (var item in Model)
 
             {
-                <tr>
+            <tr>
 
-                    <td>
+                <td>
 
-                        @Html.DisplayFor(modelItem => item.RegistrationNumber)
+                    @Html.DisplayFor(modelItem => item.RegistrationNumber)
 
-                    </td>
+                </td>
 
-                    <td>
+                <td>
 
-                        @Html.DisplayFor(modelItem => item.Type)
+                    @Html.DisplayFor(modelItem => item.OwnerName)
 
-                    </td>
+                </td>
 
-                    <td>
 
-                        @Html.DisplayFor(modelItem => item.Colour)
 
-                    </td>
+                <td>
 
-                    <td>
+                    @Html.DisplayFor(modelItem => item.Type)
 
-                        @item.ParkingTime.Days:@item.ParkingTime.Hours:@item.ParkingTime.Minutes
+                </td>
 
-                    </td>
+                <td>
 
-                    <td>
-                        <a asp-action="UnPark" asp-route-regNum="@item.RegistrationNumber">UnPark</a>
+                    @Html.DisplayFor(modelItem => item.Colour)
 
-                    </td>
+                </td>
 
-                    <td>
-                        <a asp-action="Details" asp-route-regNum="@item.RegistrationNumber">Details</a>
+                <td>
 
-                    </td>
+                    @item.ParkingTime.Days:@item.ParkingTime.Hours:@item.ParkingTime.Minutes
 
-                </tr>
+                </td>
+
+                <td>
+                    <a asp-action="UnPark" asp-route-regNum="@item.RegistrationNumber">UnPark</a>
+
+                </td>
+
+                <td>
+                    <a asp-action="Details" asp-route-regNum="@item.RegistrationNumber">Details</a>
+
+                </td>
+
+            </tr>
 
 
             }

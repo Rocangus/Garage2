@@ -14,7 +14,7 @@ namespace Garage2.ViewModels
         public VehicleType Type { get; set; }
 
         public string Colour { get; set; }
-
+        public string OwnerName { get; set; }
         public TimeSpan ParkingTime { get; set; }
 
     }
