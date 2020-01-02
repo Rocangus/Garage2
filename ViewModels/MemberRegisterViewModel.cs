@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Garage2.Validation;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -17,7 +18,7 @@ namespace Garage2.ViewModels
         [Display(Name = "City Address")]
         public string CityAddress { get; set; }
         [Display(Name = "Email Address")]
-        [Remote(action: "ValidateEmail", controller: "Members")]
+        [CheckEmail]
         public string Email { get; set; }
         [Display(Name = "Phone Number")]
         public string PhoneNumber { get; set; }
