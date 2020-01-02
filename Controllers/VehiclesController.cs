@@ -68,6 +68,7 @@ namespace Garage2.Controllers
             ViewBag.RegistrationNumberSortParm = sortOrder == "RegistrationNumber" ? "RegistrationNumber_desc" : "RegistrationNumber";
             ViewBag.ColourSortParm = sortOrder == "Colour" ? "Colour_desc" : "Colour";
             ViewBag.ParkingTimeSortParm = sortOrder == "ParkingTime" ? "ParkingTime_desc" : "ParkingTime";
+            ViewBag.OwnerNameSortParm = sortOrder == "OwnerName" ? "OwnerName_desc" : "OwnerName";
 
 
 
@@ -114,6 +115,12 @@ namespace Garage2.Controllers
                     break;
                 case "Colour_desc":
                     viewModels = viewModels.OrderByDescending(s => s.Colour).ToList();
+                    break;
+                case "OwnerName":
+                    viewModels = viewModels.OrderBy(s => s.OwnerName).ToList();
+                    break;
+                case "OwnerName_desc":
+                    viewModels = viewModels.OrderByDescending(s => s.OwnerName).ToList();
                     break;
                 default:
                     viewModels = viewModels.OrderBy(s => s.Type).ToList();
