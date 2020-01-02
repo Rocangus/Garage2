@@ -14,7 +14,7 @@ namespace Garage2.Extensions
             tempData[key] = JsonConvert.SerializeObject(value);
         }
 
-        public static T Get<T>(this TempDataDictionary tempData, string key) where T : class
+        public static T Get<T>(this ITempDataDictionary tempData, string key) where T : class
         {
             tempData.TryGetValue(key, out object o);
             return o == null ? null : JsonConvert.DeserializeObject<T>((string)o);

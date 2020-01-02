@@ -11,6 +11,7 @@ using Garage2.ViewModels;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Microsoft.Extensions.Configuration;
+using Garage2.Extensions;
 
 namespace Garage2.Controllers
 {
@@ -185,7 +186,7 @@ namespace Garage2.Controllers
                 {
                     throw new ArgumentException("The value of the SelectItem selected was not non-zero.");
                 }
-                var member = await _context.Members.Where(m => m.Email.Equals(TempData["Email"] as string)).FirstOrDefaultAsync();
+                var member = TempDataExtensions.Get<Member>(TempData, "email");
                 vehicle.MemberId = member.MemberId;
                 var vehicleType = await _context.VehicleTypes.Where(v => v.Id == vehicle.VehicleTypeId).FirstOrDefaultAsync();
                 int numberRequired;

@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
-
+using Garage2.Extensions;
 
 namespace Garage2.Controllers
 {
@@ -59,10 +59,10 @@ namespace Garage2.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult CheckEmail(EmailAddress emailAddress)
         {
-            var results = _context.Members.Where(m => m.Email == emailAddress.Email);
-            if (results.Any())
+            var result = _context.Members.FirstOrDefault(m => m.Email == emailAddress.Email);
+            if (result != null)
             {
-                TempData["email"] = emailAddress.Email;
+                TempDataExtensions.Set(TempData, "email", result);
                 TempData.Keep();
                 return RedirectToAction(nameof(VehiclesController.Park), "Vehicles");
             }
