@@ -322,12 +322,16 @@ namespace Garage2.Controllers
             // How many vehicle in vary types
             var vehicles = await _context.ParkedVehicles.ToArrayAsync();
 
-            var vehicleTypes = vehicles.Select(v => v.Type).Distinct();
+            var vehicleTypes = _context.VehicleTypes;
             var typeCounts = new Dictionary<VehicleType, int>();
             foreach (var type in vehicleTypes)
             {
-                var count = vehicles.Where(v => v.Type == type).Count();
-                typeCounts.Add(type, count);
+                var count = vehicles.Where(v => v.VehicleTypeId == type.Id).Count();
+                if(count > 0)
+                {
+                    typeCounts.Add(type, count);
+                }
+                   
             }
 
             int Wheel = vehicles.Sum(v => v.NumberOfWheels);
