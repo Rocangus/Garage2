@@ -24,27 +24,19 @@ namespace Garage2.Controllers
             
         }
 
-        public async Task<IActionResult> Index(string Name)
+        public async Task<IActionResult> Index(string name)
         {
+            var search = string.IsNullOrWhiteSpace(name) ?
+               await _context.Members.ToListAsync ()  :
+               await _context.Members.Where(m => (m.FirstName + " " + m.LastName).Contains(name)).ToListAsync();
+
             var models = new List<MemberSummaryViewModel>();
-
-            //var members = await _context.Members.ToListAsync();
             var vehicles = await _context.ParkedVehicles.ToListAsync();
-
-
-
-
-           var members = string.IsNullOrWhiteSpace(Name) ?
-               _context.Members :
-               _context.Members.Where(m => m.FirstName.Contains(Name));
-
-
-
-
-            foreach (var member in members)
+            foreach (var member in search)
             {
                 var model = new MemberSummaryViewModel
                 {
+                    Id = member.MemberId,
                     FirstName = member.FirstName,
                     LastName = member.LastName
                 };
@@ -70,9 +62,18 @@ namespace Garage2.Controllers
             var results = _context.Members.Where(m => m.Email == emailAddress.Email);
             if (results.Any())
             {
+                TempData["email"] = emailAddress.Email;
+                TempData.Keep();
                 return RedirectToAction(nameof(VehiclesController.Park), "Vehicles");
             }
             return RedirectToAction(nameof(Index));
+        }
+
+        public async Task<IActionResult> Details(int id)
+        {
+            var member = _context.Members.Where(m => m.MemberId == id);
+            var model = await mapper.ProjectTo<MemberDetailsViewModel>(member).FirstOrDefaultAsync();
+            return View(model);
         }
 
         [HttpGet]
@@ -85,7 +86,7 @@ namespace Garage2.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Register(MemberViewModel model)
+        public async Task<IActionResult> Register(MemberRegisterViewModel model)
         {
             if (ModelState.IsValid) {
                 var member = mapper.Map<Member>(model);

@@ -14,6 +14,8 @@ namespace Garage2.Models
         public string RegistrationNumber { get; set; }
 
         [Required]
+        public int VehicleTypeId { get; set; }
+
         public VehicleType Type { get; set; }
 
         [MaxLength(15)]
@@ -31,6 +33,7 @@ namespace Garage2.Models
         public int NumberOfWheels { get; set; }
 
         public DateTime ParkingDate { get; set; }
+
 
         public override bool Equals(object obj)
         {

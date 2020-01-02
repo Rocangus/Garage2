@@ -1,93 +1,53 @@
-﻿@model VehicaleSummaryDetailsViewModel
+﻿@model Garage2.ViewModels.MemberDetailsViewModel
+
 @{
-    <h1>Vehicle Details</h1>
- }
+    ViewData["Title"] = "View";
+}
+
+<h1>Member Details</h1>
 
 <div>
-
-
     <hr />
-
     <dl class="row">
-
-        <dt class="col-sm-2">
-
-            @Html.DisplayNameFor(model => model.RegistrationNumber)
-
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.FirstName)
         </dt>
-
-        <dd class="col-sm-10">
-
-            @Model.RegistrationNumber
-
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.FirstName)
         </dd>
-
-        <dt class="col-sm-2">
-
-            @Html.DisplayNameFor(model => model.Type)
-
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.LastName)
         </dt>
-
-        <dd class="col-sm-10">
-
-            @Model.Type
-
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.LastName)
         </dd>
-
-        <dt class="col-sm-2">
-
-            @Html.DisplayNameFor(model => model.Colour)
-
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.CityAddress)
         </dt>
-
-        <dd class="col-sm-10">
-
-            @Model.Colour
-
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.CityAddress)
         </dd>
-
-        <dt class="col-sm-2">
-
-            @Html.DisplayNameFor(model => model.Model)
-
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Email)
         </dt>
-
-        <dd class="col-sm-10">
-
-            @Model.Model
-
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Email)
         </dd>
-
-        <dt class="col-sm-2">
-
-            @Html.DisplayNameFor(model => model.Manufacturer)
-
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.PhoneNumber)
         </dt>
-
-        <dd class="col-sm-10">
-
-            @Model.Manufacturer
-
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.PhoneNumber)
         </dd>
-
-        <dt class="col-sm-2">
-
-            @Html.DisplayNameFor(model => model.ParkingTime)
-
-        </dt>
-
-        <dd class="col-sm-10">
-
-            @Model.ParkingTime.ToString(@"dd\:hh\:mm")
-
-        </dd>
-
     </dl>
-
+    <hr />
+    <h4>Owned vehicles</h4>
+    @foreach(var vehicle in Model.OwnedVehicles)
+    {
+        <span><strong>@vehicle.RegistrationNumber:</strong> @vehicle.Manufacturer @vehicle.Model <a asp-controller="Vehicles" asp-action="Details" asp-route-regNum="@vehicle.RegistrationNumber" asp-route-fromMember="true">Details</a></span><br />
+    }
 </div>
-
+<hr />
 <div>
-
     <a asp-action="Index">Back to List</a>
-
 </div>

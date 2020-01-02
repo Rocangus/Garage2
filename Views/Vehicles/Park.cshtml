@@ -32,7 +32,7 @@
 
                 <label asp-for="Type" class="control-label"></label>
 
-                <select asp-for="Type" asp-items="Html.GetEnumSelectList<VehicleType>()" class="form-control">
+                <select asp-for="Type" asp-items="@ViewData["selectItems"] as IEnumerable<SelectListItem>" class="form-control">
                     
                 </select>
 

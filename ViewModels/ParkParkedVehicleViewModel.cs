@@ -13,7 +13,7 @@ namespace Garage2.ViewModels
         public string RegistrationNumber { get; set; }
 
         [Required]
-        public VehicleType Type { get; set; }
+        public int VehicleTypeId { get; set; }
 
         [MaxLength(15)]
         public string Colour { get; set; }

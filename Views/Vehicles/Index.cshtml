@@ -1,4 +1,4 @@
-﻿@model IEnumerable<VehicleSummaryViewModel>
+﻿@model Tuple<IEnumerable<VehicleSummaryViewModel>, IEnumerable<SelectListItem>>
 @{
 
     <h1>Garage index</h1>
@@ -13,7 +13,7 @@
 
             <div class="input-group-append">
 
-                <select name="type" asp-items="@Html.GetEnumSelectList<VehicleType>()" class="form-control">
+                <select name="type" asp-items="@Model.Item2" class="form-control">
                     <option selected="selected" value=""> Select</option>
 
                 </select>
@@ -61,7 +61,7 @@
 
         <tbody>
 
-            @foreach (var item in Model)
+            @foreach (var item in Model.Item1)
 
             {
             <tr>

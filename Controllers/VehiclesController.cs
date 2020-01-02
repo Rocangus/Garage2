@@ -20,6 +20,7 @@ namespace Garage2.Controllers
         private decimal minutePrice = 0.05M;
         private IConfiguration _configuration;
 
+
         public VehiclesController(GarageContext context, IConfiguration configuration)
         {
             _context = context;
@@ -29,7 +30,7 @@ namespace Garage2.Controllers
 
 
         // GET: Vehicle/Details
-        public async Task<IActionResult> Details(string RegNum)
+        public async Task<IActionResult> Details(string RegNum, bool fromMember)
         {
             //RegNum = "PAY276";
 
@@ -57,7 +58,7 @@ namespace Garage2.Controllers
             ModelSum.ParkingTime = vehicle.ParkingDate - DateTime.Now;
             // ModelSum.NumberOfWheels = vehicle.NumberOfWheels;
 
-            return View(ModelSum);
+            return View((ModelSum, fromMember));
 
         }
 
@@ -74,14 +75,11 @@ namespace Garage2.Controllers
                 _context.ParkedVehicles :
                 _context.ParkedVehicles.Where(m => m.RegistrationNumber.Contains(RegNum));
 
-              /// member.OwnedVehicles = vehicles.Where(v => v.MemberId == member.MemberId).ToList();
-
-
-
+            IEnumerable<SelectListItem> vehicleTypeSelectItems = await GetVehicleTypeSelectListItems();
 
             vehicles = type == null ?
                 vehicles :
-                vehicles.Where(m => m.Type == (VehicleType)type);
+                vehicles.Where(m => m.VehicleTypeId == type);
 
             var viewModels = new List<VehicleSummaryViewModel>();
             IEnumerable<Member> members = _context.Members;
@@ -97,7 +95,7 @@ namespace Garage2.Controllers
             switch (sortOrder)
             {
                 case "type_desc":
-                    viewModels =  viewModels.OrderByDescending(s => s.Type).ToList();
+                    viewModels = viewModels.OrderByDescending(s => s.Type).ToList();
                     break;
                 case "RegistrationNumber":
                     viewModels = viewModels.OrderBy(s => s.RegistrationNumber).ToList();
@@ -122,11 +120,29 @@ namespace Garage2.Controllers
                     break;
             }
 
-            return View(viewModels);
+            return View(new Tuple<IEnumerable<VehicleSummaryViewModel>, IEnumerable<SelectListItem>>
+                                 (viewModels, vehicleTypeSelectItems));
 
         }
 
-        private VehicleSummaryViewModel CreateSummaryViewModel(ParkedVehicle vehicle, IEnumerable<Member> members)
+        private async Task<List<SelectListItem>> GetVehicleTypeSelectListItems()
+        {
+            var vehicleTypeSelectItems = new List<SelectListItem>();
+            var vehicleTypes = await _context.VehicleTypes.ToListAsync();
+            foreach (VehicleType vehicleType in vehicleTypes)
+            {
+                var item = new SelectListItem()
+                {
+                    Value = vehicleType.Id.ToString(),
+                    Text = vehicleType.Name
+                };
+                vehicleTypeSelectItems.Add(item);
+            }
+
+            return vehicleTypeSelectItems;
+        }
+
+        private static VehicleSummaryViewModel CreateSummaryViewModel(ParkedVehicle vehicle)
         {
             var model = new VehicleSummaryViewModel();
             var owner = members.FirstOrDefault(m => m.MemberId == vehicle.MemberId);
@@ -140,8 +156,10 @@ namespace Garage2.Controllers
 
 
         // Get: Vehicle/Park
-        public IActionResult Park()
+        public async Task<IActionResult> Park()
         {
+            TempData.Keep();
+            ViewData["selectItems"] = await GetVehicleTypeSelectListItems();
             return View();
 
         }
@@ -151,18 +169,27 @@ namespace Garage2.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Park(ParkParkedVehicleViewModel viewModel)
         {
+            var parkSpots = ParkingSpotContainer.GetParkSpots(_configuration);
             if (ModelState.IsValid)
             {
                 var vehicle = new ParkedVehicle();
-                int numberRequired;
-                switch (viewModel.Type)
+                vehicle.VehicleTypeId = int.Parse(Request.Form["Type"].ToString());
+                if (vehicle.VehicleTypeId == 0)
                 {
-                    case VehicleType.Bus:
+                    throw new ArgumentException("The value of the SelectItem selected was not non-zero.");
+                }
+                var member = await _context.Members.Where(m => m.Email.Equals(TempData["Email"] as string)).FirstOrDefaultAsync();
+                vehicle.MemberId = member.MemberId;
+                var vehicleType = await _context.VehicleTypes.Where(v => v.Id == vehicle.VehicleTypeId).FirstOrDefaultAsync();
+                int numberRequired;
+                switch (vehicleType.Name)
+                {
+                    case "Bus":
                         {
                             numberRequired = 2;
                             break;
                         }
-                    case VehicleType.Truck:
+                    case "Truck":
                         {
                             numberRequired = 3;
                             break;
@@ -175,10 +202,10 @@ namespace Garage2.Controllers
 
                 }
                 int startOfSpotSequence;
-                if (viewModel.Type == VehicleType.Motorcycle)
+                if (vehicleType.Name == "Motorcycle")
                 {
                     {
-                        var spot = ParkingSpotContainer.GetAvailableSpot(ParkingSpotContainer.GetParkSpots(_configuration), true);
+                        var spot = ParkingSpotContainer.GetAvailableSpot(parkSpots, true);
                         if (spot != null)
                         {
                             PopulateVehicleFromViewModel(viewModel, vehicle);
@@ -188,7 +215,7 @@ namespace Garage2.Controllers
                         }
                     }
                 }
-                else if (viewModel.Type != VehicleType.Motorcycle && ParkingSpotContainer.FindConsecutiveSpots(numberRequired, out startOfSpotSequence))
+                else if (vehicleType.Name != "Motorcycle" && ParkingSpotContainer.FindConsecutiveSpots(numberRequired, out startOfSpotSequence))
                 {
                     PopulateVehicleFromViewModel(viewModel, vehicle);
                     ParkingSpotContainer.ParkOnMultipleSpots(startOfSpotSequence, numberRequired, vehicle);
@@ -206,7 +233,6 @@ namespace Garage2.Controllers
         private static void PopulateVehicleFromViewModel(ParkParkedVehicleViewModel viewModel, ParkedVehicle vehicle)
         {
             vehicle.RegistrationNumber = viewModel.RegistrationNumber;
-            vehicle.Type = viewModel.Type;
             vehicle.Colour = viewModel.Colour;
             vehicle.Manufacturer = viewModel.Manufacturer;
             vehicle.Model = viewModel.Model;
@@ -273,8 +299,11 @@ namespace Garage2.Controllers
             TimeSpan parkingDuration;
             decimal cost;
             GetParkingCost(vehicle, out currentTime, out parkingDuration, out cost);
+            var member = _context.Members.FirstOrDefault(m => m.MemberId == vehicle.MemberId);
+            var memberFullName = member.FullName;
+          
 
-            var model = new Tuple<ParkedVehicle, DateTime, TimeSpan, decimal>(vehicle, currentTime, parkingDuration, cost);
+           var model = new Tuple<ParkedVehicle, DateTime, TimeSpan, decimal, string>(vehicle, currentTime, parkingDuration, cost, memberFullName);
 
             return View(model);
         }
