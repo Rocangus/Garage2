@@ -48,13 +48,13 @@ namespace Garage2.Controllers
             return View(models);
         }
 
-        // Get: Members/ParkEmail
+        // Get: Members/CheckEmail
         public IActionResult CheckEmail()
         {
             return View();
         }
 
-        // Post: Members/ParkEmail
+        // Post: Members/CheckEmail
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult CheckEmail(EmailAddress emailAddress)
@@ -66,7 +66,12 @@ namespace Garage2.Controllers
                 TempData.Keep();
                 return RedirectToAction(nameof(VehiclesController.Park), "Vehicles");
             }
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(RegistrationRequired));
+        }
+
+        public IActionResult RegistrationRequired()
+        {
+            return View();
         }
 
         public async Task<IActionResult> Details(int id)
