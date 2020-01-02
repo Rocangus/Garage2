@@ -142,7 +142,7 @@ namespace Garage2.Controllers
             return vehicleTypeSelectItems;
         }
 
-        private static VehicleSummaryViewModel CreateSummaryViewModel(ParkedVehicle vehicle)
+        private static VehicleSummaryViewModel CreateSummaryViewModel(ParkedVehicle vehicle, IEnumerable<Member> members)
         {
             var model = new VehicleSummaryViewModel();
             var owner = members.FirstOrDefault(m => m.MemberId == vehicle.MemberId);
