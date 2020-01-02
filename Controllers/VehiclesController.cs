@@ -20,6 +20,7 @@ namespace Garage2.Controllers
         private decimal minutePrice = 0.05M;
         private IConfiguration _configuration;
 
+
         public VehiclesController(GarageContext context, IConfiguration configuration)
         {
             _context = context;
@@ -295,8 +296,11 @@ namespace Garage2.Controllers
             TimeSpan parkingDuration;
             decimal cost;
             GetParkingCost(vehicle, out currentTime, out parkingDuration, out cost);
+            var member = _context.Members.FirstOrDefault(m => m.MemberId == vehicle.MemberId);
+            var memberFullName = member.FullName;
+          
 
-            var model = new Tuple<ParkedVehicle, DateTime, TimeSpan, decimal>(vehicle, currentTime, parkingDuration, cost);
+           var model = new Tuple<ParkedVehicle, DateTime, TimeSpan, decimal, string>(vehicle, currentTime, parkingDuration, cost, memberFullName);
 
             return View(model);
         }

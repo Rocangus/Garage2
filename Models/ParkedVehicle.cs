@@ -34,6 +34,7 @@ namespace Garage2.Models
 
         public DateTime ParkingDate { get; set; }
 
+
         public override bool Equals(object obj)
         {
             if (obj is ParkedVehicle vehicle)

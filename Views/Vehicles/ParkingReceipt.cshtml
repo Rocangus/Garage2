@@ -1,10 +1,15 @@
-﻿@model Tuple<ParkedVehicle, DateTime, TimeSpan, decimal>
+﻿@model Tuple<ParkedVehicle, DateTime, TimeSpan, decimal, string>
 
 @{
     ViewData["Title"] = "Parking Receipt";
 }
 
 <h1>Parking Receipt</h1>
+
+<div>
+    <h3>Member Name</h3>
+      @Model.Item5<br />
+</div>
 
 <div>
     <h3>Vehicle Details</h3>

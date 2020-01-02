@@ -15,6 +15,9 @@ namespace Garage2.ViewModels
 
         [Display(Name = "Last Name")]
         public string LastName { get; set; }
+
+        public string FullName { get => FirstName + " " + LastName; }
+
         [Display(Name = "City Address")]
         public string CityAddress { get; set; }
         [Display(Name = "Email Address")]
