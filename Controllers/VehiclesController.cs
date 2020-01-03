@@ -289,7 +289,7 @@ namespace Garage2.Controllers
                 spot.Unpark(vehicle);
             } while (ParkingSpotContainer.FindSpotByVehicle(vehicle) != null);
 
-            TempData["vehicle"] = JsonConvert.SerializeObject(vehicle);
+            TempDataExtensions.Set(TempData, "vehicle", vehicle);
             TempData.Keep();
             return RedirectToAction(nameof(ParkingReceipt));
 
@@ -297,8 +297,7 @@ namespace Garage2.Controllers
 
         public IActionResult ParkingReceipt()
         {
-            var vehicleString = TempData["vehicle"] as string;
-            var vehicle = JsonConvert.DeserializeObject<ParkedVehicle>(vehicleString) as ParkedVehicle;
+            var vehicle = TempDataExtensions.Get<ParkedVehicle>(TempData, "vehicle");
             if (vehicle == null)
             {
                 throw new Exception("JsonConvert failed to convert TempData");
