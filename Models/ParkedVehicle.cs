@@ -23,6 +23,7 @@ namespace Garage2.Models
         public VehicleType Type { get; set; }
 
         [MaxLength(15)]
+        [Required]
         public string Colour { get; set; }
 
         [MaxLength(30)]

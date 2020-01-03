@@ -187,6 +187,7 @@ namespace Garage2.Controllers
                 {
                     throw new ArgumentException("The value of the SelectItem selected was zero.");
                 }
+               
                 var member = TempDataExtensions.Get<Member>(TempData, "member");
                 vehicle.MemberId = member.MemberId;
                 PopulateVehicleFromViewModel(viewModel, vehicle);
@@ -319,7 +320,14 @@ namespace Garage2.Controllers
                 return NotFound();
             }
 
-            return View(vehicle);
+            var ModelSum = new VehicleSummaryUnparkViewModel(vehicle);
+            ModelSum.RegistrationNumber = vehicle.RegistrationNumber;
+            ModelSum.Manufacturer = vehicle.Manufacturer;
+            ModelSum.Model = vehicle.Model;
+            ModelSum.Type = await _context.VehicleTypes.FirstOrDefaultAsync(t => t.Id == vehicle.VehicleTypeId);
+         
+
+            return View(ModelSum);
 
         }
 
