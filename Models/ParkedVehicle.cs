@@ -10,8 +10,9 @@ namespace Garage2.Models
     public class ParkedVehicle
     {
         [Key]
-        [RegularExpression(@"^([A-Z]|[a-z]){3}\d{2,3}([A-Z]|[a-z]){0,1}")]
-        [Remote("Vehicles/ValidateRegistrationNumber")]
+        [RegularExpression(@"^([A-H,J-P,R-Z]|[a-h,j-p,r-z]){3}(\d{2}([A-H,J-P,R-Z]|[a-h,j-p,r-z]){1}|\d{3})", 
+            ErrorMessage = "The specified registration number is not valid in Sweden.")]
+        [Remote("ValidateRegistrationNumber", "Vehicles")]
         [Required]
         public string RegistrationNumber { get; set; }
 
