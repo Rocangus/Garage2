@@ -1,4 +1,4 @@
-﻿@model ParkedVehicle
+﻿@model VehicleSummaryUnparkViewModel
 @{
     ViewData["Title"] = "UnPark";
 }
@@ -35,7 +35,7 @@
 
         <dd class="col-sm-10">
 
-            @Html.DisplayFor(model => model.Type)
+            @Html.DisplayFor(model => model.Type.Name)
 
         </dd>
 

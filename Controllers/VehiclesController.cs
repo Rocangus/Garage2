@@ -186,6 +186,7 @@ namespace Garage2.Controllers
                 {
                     throw new ArgumentException("The value of the SelectItem selected was not non-zero.");
                 }
+               
                 var member = TempDataExtensions.Get<Member>(TempData, "member");
                 vehicle.MemberId = member.MemberId;
                 var vehicleType = await _context.VehicleTypes.Where(v => v.Id == vehicle.VehicleTypeId).FirstOrDefaultAsync();
@@ -265,7 +266,14 @@ namespace Garage2.Controllers
                 return NotFound();
             }
 
-            return View(vehicle);
+            var ModelSum = new VehicleSummaryUnparkViewModel(vehicle);
+            ModelSum.RegistrationNumber = vehicle.RegistrationNumber;
+            ModelSum.Manufacturer = vehicle.Manufacturer;
+            ModelSum.Model = vehicle.Model;
+            ModelSum.Type = await _context.VehicleTypes.FirstOrDefaultAsync(t => t.Id == vehicle.VehicleTypeId);
+         
+
+            return View(ModelSum);
 
         }
 
@@ -289,7 +297,7 @@ namespace Garage2.Controllers
                 spot.Unpark(vehicle);
             } while (ParkingSpotContainer.FindSpotByVehicle(vehicle) != null);
 
-            TempData["vehicle"] = JsonConvert.SerializeObject(vehicle);
+            TempDataExtensions.Set(TempData, "vehicle", vehicle);
             TempData.Keep();
             return RedirectToAction(nameof(ParkingReceipt));
 
@@ -297,8 +305,7 @@ namespace Garage2.Controllers
 
         public IActionResult ParkingReceipt()
         {
-            var vehicleString = TempData["vehicle"] as string;
-            var vehicle = JsonConvert.DeserializeObject<ParkedVehicle>(vehicleString) as ParkedVehicle;
+            var vehicle = TempDataExtensions.Get<ParkedVehicle>(TempData, "vehicle");
             if (vehicle == null)
             {
                 throw new Exception("JsonConvert failed to convert TempData");
