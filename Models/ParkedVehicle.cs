@@ -14,6 +14,7 @@ namespace Garage2.Models
             ErrorMessage = "The specified registration number is not valid in Sweden.")]
         [Remote("ValidateRegistrationNumber", "Vehicles")]
         [Required]
+        [Display(Name = "Registration Number")]
         public string RegistrationNumber { get; set; }
 
         [Required]
@@ -33,6 +34,7 @@ namespace Garage2.Models
         public int MemberId { get; set; }
 
         [Range(2, 18)]
+        [Display(Name = "Number of Wheels")]
         public int NumberOfWheels { get; set; }
 
         public DateTime ParkingDate { get; set; }

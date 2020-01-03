@@ -55,7 +55,7 @@ namespace Garage2.Controllers
             ModelSum.RegistrationNumber = vehicle.RegistrationNumber;
             ModelSum.Manufacturer = vehicle.Manufacturer;
             ModelSum.Model = vehicle.Model;
-            ModelSum.Type = vehicle.Type;
+            ModelSum.Type = await _context.VehicleTypes.FirstOrDefaultAsync(t => t.Id == vehicle.VehicleTypeId);
             ModelSum.ParkingTime = vehicle.ParkingDate - DateTime.Now;
             // ModelSum.NumberOfWheels = vehicle.NumberOfWheels;
 
