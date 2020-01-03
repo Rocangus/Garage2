@@ -266,7 +266,14 @@ namespace Garage2.Controllers
                 return NotFound();
             }
 
-            return View(vehicle);
+            var ModelSum = new VehicleSummaryUnparkViewModel(vehicle);
+            ModelSum.RegistrationNumber = vehicle.RegistrationNumber;
+            ModelSum.Manufacturer = vehicle.Manufacturer;
+            ModelSum.Model = vehicle.Model;
+            ModelSum.Type = await _context.VehicleTypes.FirstOrDefaultAsync(t => t.Id == vehicle.VehicleTypeId);
+         
+
+            return View(ModelSum);
 
         }
 
