@@ -88,10 +88,11 @@ namespace Garage2.Controllers
 
             foreach (ParkedVehicle vehicle in vehicles)
             {
-
-                VehicleSummaryViewModel viewModel = CreateSummaryViewModel(vehicle, members);
-
-                viewModels.Add(viewModel);
+                if (vehicle.IsParked)
+                {
+                    VehicleSummaryViewModel viewModel = CreateSummaryViewModel(vehicle, members);
+                    viewModels.Add(viewModel);
+                }
             }
 
             switch (sortOrder)
@@ -184,52 +185,14 @@ namespace Garage2.Controllers
                 vehicle.VehicleTypeId = int.Parse(Request.Form["Type"].ToString());
                 if (vehicle.VehicleTypeId == 0)
                 {
-                    throw new ArgumentException("The value of the SelectItem selected was not non-zero.");
+                    throw new ArgumentException("The value of the SelectItem selected was zero.");
                 }
                
                 var member = TempDataExtensions.Get<Member>(TempData, "member");
                 vehicle.MemberId = member.MemberId;
-                var vehicleType = await _context.VehicleTypes.Where(v => v.Id == vehicle.VehicleTypeId).FirstOrDefaultAsync();
-                int numberRequired;
-                switch (vehicleType.Name)
-                {
-                    case "Bus":
-                        {
-                            numberRequired = 2;
-                            break;
-                        }
-                    case "Truck":
-                        {
-                            numberRequired = 3;
-                            break;
-                        }
-                    default:
-                        {
-                            numberRequired = 1;
-                            break;
-                        }
-
-                }
-                int startOfSpotSequence;
-                if (vehicleType.Name == "Motorcycle")
-                {
-                    {
-                        var spot = ParkingSpotContainer.GetAvailableSpot(parkSpots, true);
-                        if (spot != null)
-                        {
-                            PopulateVehicleFromViewModel(viewModel, vehicle);
-                            spot.Park(vehicle);
-                            spot.VehicleCount++;
-                            spot.HasMotorcycles = true;
-                        }
-                    }
-                }
-                else if (vehicleType.Name != "Motorcycle" && ParkingSpotContainer.FindConsecutiveSpots(numberRequired, out startOfSpotSequence))
-                {
-                    PopulateVehicleFromViewModel(viewModel, vehicle);
-                    ParkingSpotContainer.ParkOnMultipleSpots(startOfSpotSequence, numberRequired, vehicle);
-
-                }
+                PopulateVehicleFromViewModel(viewModel, vehicle);
+                await ParkVehicleInBackend(parkSpots, vehicle);
+                vehicle.IsParked = true;
                 _context.Add(vehicle);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -237,6 +200,97 @@ namespace Garage2.Controllers
 
             return View();
 
+        }
+
+        private async Task ParkVehicleInBackend(ParkSpot[] parkSpots, ParkedVehicle vehicle)
+        {
+            var vehicleType = await _context.VehicleTypes.Where(v => v.Id == vehicle.VehicleTypeId).FirstOrDefaultAsync();
+            int numberRequired = GetRequiredNumberOfSpots(vehicleType);
+            int startOfSpotSequence;
+            if (vehicleType.Name == "Motorcycle")
+            {
+                {
+                    var spot = ParkingSpotContainer.GetAvailableSpot(parkSpots, true);
+                    if (spot != null)
+                    {
+                        spot.Park(vehicle);
+                        spot.VehicleCount++;
+                        spot.HasMotorcycles = true;
+                    }
+                }
+            }
+            else if (vehicleType.Name != "Motorcycle" && ParkingSpotContainer.FindConsecutiveSpots(numberRequired, out startOfSpotSequence))
+            {
+                ParkingSpotContainer.ParkOnMultipleSpots(startOfSpotSequence, numberRequired, vehicle);
+
+            }
+        }
+
+        public IActionResult RePark()
+        {
+            TempData.Keep();
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RePark(string registrationNumber)
+        {
+            var vehicle = await _context.ParkedVehicles.FirstOrDefaultAsync(v => v.RegistrationNumber.Equals(registrationNumber));
+            if (vehicle == null)
+            {
+                TempData.Keep();
+                return RedirectToAction(nameof(Park));
+            }
+            vehicle.ParkingDate = DateTime.Now;
+            vehicle.IsParked = true;
+            var parkSpots = ParkingSpotContainer.GetParkSpots(_configuration);
+            await ParkVehicleInBackend(parkSpots, vehicle);
+            try
+            {
+                _context.Update(vehicle);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(actionName: "Index", controllerName: "Vehicles");
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (await _context.ParkedVehicles.FirstOrDefaultAsync(v => v.RegistrationNumber == registrationNumber) == null)
+                {
+                    TempData.Keep();
+                    return RedirectToAction(nameof(Park));
+                }
+                else
+                {
+                    throw;
+                }
+            }
+            return View();
+        }
+
+        private static int GetRequiredNumberOfSpots(VehicleType vehicleType)
+        {
+            int numberRequired;
+            switch (vehicleType.Name)
+            {
+                case "Bus":
+                    {
+                        numberRequired = 2;
+                        break;
+                    }
+                case "Truck":
+                    {
+                        numberRequired = 3;
+                        break;
+                    }
+                default:
+                    {
+                        numberRequired = 1;
+                        break;
+                    }
+
+            }
+
+            return numberRequired;
         }
 
         private static void PopulateVehicleFromViewModel(ParkParkedVehicleViewModel viewModel, ParkedVehicle vehicle)
@@ -283,19 +337,22 @@ namespace Garage2.Controllers
         public async Task<IActionResult> UnParkConfirmed(string RegNum)
         {
             var vehicle = await _context.ParkedVehicles.FindAsync(RegNum);
+            var vehicleType = await _context.VehicleTypes.FirstOrDefaultAsync(t => t.Id == vehicle.VehicleTypeId);
+            var spotsRequired = GetRequiredNumberOfSpots(vehicleType);
             if (vehicle != null)
             {
-                _context.ParkedVehicles.Remove(vehicle);
+                vehicle.IsParked = false;
+                _context.Update(vehicle);
                 await _context.SaveChangesAsync();
-            }
+            } else { throw new ArgumentNullException(nameof(vehicle), "The vehicle could not be found in the database."); }
 
             ParkSpot spot;
             // TODO: More elegant solution without extra calls to FindSpotByVehicle
-            do
+            for (var i = 0; i < spotsRequired; i++)
             {
                 spot = ParkingSpotContainer.FindSpotByVehicle(vehicle);
                 spot.Unpark(vehicle);
-            } while (ParkingSpotContainer.FindSpotByVehicle(vehicle) != null);
+            }
 
             TempDataExtensions.Set(TempData, "vehicle", vehicle);
             TempData.Keep();
