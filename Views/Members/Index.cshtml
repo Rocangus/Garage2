@@ -55,7 +55,7 @@
                     @Html.DisplayFor(modelItem => item.Count)
                 </td>
                 <td>
-                    @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
+                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
                     <a asp-action="Details" asp-route-id="@item.Id">Details</a>
                 </td>
             </tr>

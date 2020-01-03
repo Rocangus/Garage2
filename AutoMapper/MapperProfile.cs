@@ -12,6 +12,7 @@ namespace Garage2.AutoMapper
     {
         public MapperProfile()
         {
+            CreateMap<Member, MemberEditViewModel>().ReverseMap();
             CreateMap<Member, MemberRegisterViewModel>().ReverseMap();
             CreateMap<Member, MemberDetailsViewModel>();
 

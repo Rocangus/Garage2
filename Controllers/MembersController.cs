@@ -102,6 +102,63 @@ namespace Garage2.Controllers
             return View();
         }
 
+        public async Task<IActionResult> Edit(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var member = await _context.Members.FindAsync(id);
+            if (member == null)
+            {
+                return NotFound();
+            }
+            var model = mapper.Map<MemberEditViewModel>(member);
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, 
+            [Bind("Id,FirstName,LastName,CityAddress,Email,PhoneNumber")] MemberEditViewModel model)
+        {
+            if (id != model.Id)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var member = await _context.Members.FirstOrDefaultAsync(m => m.MemberId == model.Id);
+                    mapper.Map(model, member);
+                    if (member != null) {
+                        _context.Update(member);
+                        await _context.SaveChangesAsync();
+                    }
+                    else
+                    {
+                        return NotFound();
+                    }
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if(!_context.Members.Any(m => m.MemberId == id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                return RedirectToAction(nameof(Details), new { id }) ;
+            }
+            return View(model);
+        }
+
         public IActionResult ValidateEmail(string email)
         {
             if(_context.Members.Any(m => m.Email == email)) 
