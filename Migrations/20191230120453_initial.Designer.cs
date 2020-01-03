@@ -4,14 +4,16 @@ using Garage2.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Garage2.Migrations
 {
     [DbContext(typeof(GarageContext))]
-    partial class GarageContextModelSnapshot : ModelSnapshot
+    [Migration("20191230120453_initial")]
+    partial class initial
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -47,6 +49,17 @@ namespace Garage2.Migrations
                     b.HasAlternateKey("Email");
 
                     b.ToTable("Members");
+
+                    b.HasData(
+                        new
+                        {
+                            MemberId = 1,
+                            CityAddress = "Lindevägen 60 Enskede Gård",
+                            Email = "henning.oden@outlook.com",
+                            FirstName = "Henning",
+                            LastName = "Odén",
+                            PhoneNumber = "0739753838"
+                        });
                 });
 
             modelBuilder.Entity("Garage2.Models.ParkedVehicle", b =>
@@ -75,53 +88,26 @@ namespace Garage2.Migrations
                     b.Property<DateTime>("ParkingDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("VehicleTypeId")
+                    b.Property<int>("Type")
                         .HasColumnType("int");
 
                     b.HasKey("RegistrationNumber");
 
                     b.HasIndex("MemberId");
 
-                    b.HasIndex("VehicleTypeId");
-
                     b.ToTable("ParkedVehicles");
-                });
-
-            modelBuilder.Entity("Garage2.Models.VehicleType", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("VehicleTypes");
 
                     b.HasData(
                         new
                         {
-                            Id = 1,
-                            Name = "Car"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "Motorcycle"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Name = "Bus"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Name = "Truck"
+                            RegistrationNumber = "PAY276",
+                            Colour = "Red",
+                            Manufacturer = "Skoda",
+                            MemberId = 1,
+                            Model = "Fabia Combi 1.2 TSI",
+                            NumberOfWheels = 4,
+                            ParkingDate = new DateTime(2019, 12, 26, 19, 8, 27, 0, DateTimeKind.Unspecified),
+                            Type = 0
                         });
                 });
 
@@ -130,12 +116,6 @@ namespace Garage2.Migrations
                     b.HasOne("Garage2.Models.Member", null)
                         .WithMany("OwnedVehicles")
                         .HasForeignKey("MemberId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Garage2.Models.VehicleType", "Type")
-                        .WithMany()
-                        .HasForeignKey("VehicleTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

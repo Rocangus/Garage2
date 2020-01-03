@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -16,24 +17,57 @@ namespace Garage2.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            ParkedVehicle pay276 = new ParkedVehicle { RegistrationNumber = "PAY276", Colour = "Red", Manufacturer = "Skoda", Model = "Fabia Combi 1.2 TSI", NumberOfWheels = 4, Type = VehicleType.Car };
-            ParkedVehicle aaa123 = new ParkedVehicle { RegistrationNumber = "AAA123", Colour = "White", Manufacturer = "MAN", Model = "Buss", NumberOfWheels = 6, Type = VehicleType.Bus };
-            ParkedVehicle huj63e = new ParkedVehicle { RegistrationNumber = "HUJ63E", Colour = "Blue", Manufacturer = "BMW", Model = "S1000RR", NumberOfWheels = 2, Type = VehicleType.Motorcycle };
-            modelBuilder.Entity<ParkedVehicle>()
-                .HasData(
-                    pay276,
-                    aaa123,
-                    huj63e
-                );
-            modelBuilder.Entity<ParkingContract>()
-                .HasData(
-                    new { Id=1, ParkingDate=DateTime.Parse("2019-12-13 10:35:26"), VehicleRegistrationNumber="PAY276"},
-                    new { Id=2, ParkingDate=DateTime.Parse("2019-12-13 08:29:47"), VehicleRegistrationNumber= "AAA123" },
-                    new { Id=3, ParkingDate=DateTime.Parse("2019-12-03 14:02:33"), VehicleRegistrationNumber= "HUJ63E" }
-                );
+            modelBuilder.Entity<Member>()
+                .HasAlternateKey(m => m.Email);
+            modelBuilder.Entity<VehicleType>().HasData(
+                new VehicleType
+                {
+                    Id = 1,
+                    Name = "Car"
+                },
+                new VehicleType
+                {
+                    Id = 2,
+                    Name = "Motorcycle"
+                },
+                new VehicleType
+                {
+                    Id = 3,
+                    Name = "Bus"
+                },
+                new VehicleType
+                {
+                    Id = 4,
+                    Name = "Truck"
+                });
+
+            //Member member = new Member
+            //{
+            //    MemberId = 1,
+            //    FirstName = "Henning",
+            //    LastName = "Odén",
+            //    Email = "henning.oden@outlook.com",
+            //    CityAddress = "Lindevägen 60 Enskede Gård",
+            //    PhoneNumber = "0739753838"
+            //};
+            //modelBuilder.Entity<Member>().HasData(
+            //    member);
+            //modelBuilder.Entity<ParkedVehicle>().HasData(
+            //    new ParkedVehicle
+            //    {
+            //        RegistrationNumber = "PAY276",
+            //        Colour = "Red",
+            //        Manufacturer = "Skoda",
+            //        Model = "Fabia Combi 1.2 TSI",
+            //        MemberId = 1,
+            //        NumberOfWheels = 4,
+            //        ParkingDate = DateTime.Parse("2019-12-26T19:08:27", new CultureInfo("sv-SE")),
+            //        Type = modelBuilder.Entity<VehicleType>().
+            //    });
         }
 
         public DbSet<ParkedVehicle> ParkedVehicles { get; set; }
-        public DbSet<ParkingContract> Contracts { get; set; }
+        public DbSet<Member> Members { get; set; }
+        public DbSet<VehicleType> VehicleTypes { get; set; }
     }
 }

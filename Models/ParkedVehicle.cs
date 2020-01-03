@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -9,11 +10,16 @@ namespace Garage2.Models
     public class ParkedVehicle
     {
         [Key]
-        [RegularExpression(@"^([A-Z]|[a-z]){3}\d{2,3}([A-Z]|[a-z]){0,1}")]
+        [RegularExpression(@"^([A-H,J-P,R-Z]|[a-h,j-p,r-z]){3}(\d{2}([A-H,J-P,R-Z]|[a-h,j-p,r-z]){1}|\d{3})", 
+            ErrorMessage = "The specified registration number is not valid in Sweden.")]
+        [Remote("ValidateRegistrationNumber", "Vehicles")]
         [Required]
+        [Display(Name = "Registration Number")]
         public string RegistrationNumber { get; set; }
 
         [Required]
+        public int VehicleTypeId { get; set; }
+
         public VehicleType Type { get; set; }
 
         [MaxLength(15)]
@@ -25,8 +31,14 @@ namespace Garage2.Models
         [MaxLength(60)]
         public string Model { get; set; }
 
+        public int MemberId { get; set; }
+
         [Range(2, 18)]
+        [Display(Name = "Number of Wheels")]
         public int NumberOfWheels { get; set; }
+
+        public DateTime ParkingDate { get; set; }
+
 
         public override bool Equals(object obj)
         {

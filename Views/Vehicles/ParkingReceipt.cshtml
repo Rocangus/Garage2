@@ -1,4 +1,4 @@
-﻿@model Tuple<ParkedVehicle, ParkingContract, DateTime, TimeSpan, decimal>
+﻿@model Tuple<ParkedVehicle, DateTime, TimeSpan, decimal, string>
 
 @{
     ViewData["Title"] = "Parking Receipt";
@@ -7,7 +7,12 @@
 <h1>Parking Receipt</h1>
 
 <div>
-    <h3>Car Details</h3>
+    <h3>Member Name</h3>
+      @Model.Item5<br />
+</div>
+<hr />
+<div>
+    <h3>Vehicle Details</h3>
     <label asp-for="@Model.Item1.RegistrationNumber"></label>
     <span><strong>@Model.Item1.RegistrationNumber</strong></span><br />
     <label asp-for="@Model.Item1.Colour"></label>
@@ -21,8 +26,8 @@
 <div>
     <h3>Parking Details</h3>
     <p>
-        <strong>Parking date:</strong>@Model.Item2.ParkingDate<br />
-        <strong>Unparking date:</strong>@Model.Item3
+        <strong>Parking date:</strong>@Model.Item1.ParkingDate<br />
+        <strong>Unparking date:</strong>@Model.Item2
     </p>
 </div>
 <hr />
@@ -30,8 +35,8 @@
     <h3>Parking Cost</h3>
     <p class="align-self-end">
         <span>Price: <strong>0,05 SEK</strong> per minute (max 50 SEK per day)</span><br />
-        <span>Total parking time: <strong>@Model.Item4.Days.ToString() days, @Model.Item4.Hours hours, @Model.Item4.Minutes minutes</strong></span>
-        <span class="text-right">Total: <strong>@System.Math.Ceiling(Model.Item5) SEK</strong></span>
+        <span>Total parking time: <strong>@Model.Item3.Days.ToString() days, @Model.Item3.Hours hours, @Model.Item3.Minutes minutes</strong></span>
+        <span class="text-right">Total: <strong>@System.Math.Ceiling(Model.Item4) SEK</strong></span>
     </p>
 </div>
 

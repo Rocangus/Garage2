@@ -11,6 +11,7 @@ using Garage2.ViewModels;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Microsoft.Extensions.Configuration;
+using Garage2.Extensions;
 
 namespace Garage2.Controllers
 {
@@ -19,6 +20,7 @@ namespace Garage2.Controllers
         private GarageContext _context;
         private decimal minutePrice = 0.05M;
         private IConfiguration _configuration;
+
 
         public VehiclesController(GarageContext context, IConfiguration configuration)
         {
@@ -29,7 +31,7 @@ namespace Garage2.Controllers
 
 
         // GET: Vehicle/Details
-        public async Task<IActionResult> Details(string RegNum)
+        public async Task<IActionResult> Details(string RegNum, bool fromMember)
         {
             //RegNum = "PAY276";
 
@@ -47,18 +49,17 @@ namespace Garage2.Controllers
                 return NotFound();
             }
 
-            var contract = await _context.Contracts.FirstOrDefaultAsync(c => c.Vehicle == vehicle);
 
             var ModelSum = new VehicaleSummaryDetailsViewModel(vehicle);
             ModelSum.Colour = vehicle.Colour;
             ModelSum.RegistrationNumber = vehicle.RegistrationNumber;
             ModelSum.Manufacturer = vehicle.Manufacturer;
             ModelSum.Model = vehicle.Model;
-            ModelSum.Type = vehicle.Type;
-            ModelSum.ParkingTime = contract.ParkingDate - DateTime.Now;
+            ModelSum.Type = await _context.VehicleTypes.FirstOrDefaultAsync(t => t.Id == vehicle.VehicleTypeId);
+            ModelSum.ParkingTime = vehicle.ParkingDate - DateTime.Now;
             // ModelSum.NumberOfWheels = vehicle.NumberOfWheels;
 
-            return View(ModelSum);
+            return View((ModelSum, fromMember));
 
         }
 
@@ -68,6 +69,7 @@ namespace Garage2.Controllers
             ViewBag.RegistrationNumberSortParm = sortOrder == "RegistrationNumber" ? "RegistrationNumber_desc" : "RegistrationNumber";
             ViewBag.ColourSortParm = sortOrder == "Colour" ? "Colour_desc" : "Colour";
             ViewBag.ParkingTimeSortParm = sortOrder == "ParkingTime" ? "ParkingTime_desc" : "ParkingTime";
+            ViewBag.OwnerNameSortParm = sortOrder == "OwnerName" ? "OwnerName_desc" : "OwnerName";
 
 
 
@@ -75,24 +77,19 @@ namespace Garage2.Controllers
                 _context.ParkedVehicles :
                 _context.ParkedVehicles.Where(m => m.RegistrationNumber.Contains(RegNum));
 
+            IEnumerable<SelectListItem> vehicleTypeSelectItems = await GetVehicleTypeSelectListItems();
+
             vehicles = type == null ?
                 vehicles :
-                vehicles.Where(m => m.Type == (VehicleType)type);
+                vehicles.Where(m => m.VehicleTypeId == type);
 
-            var contracts = _context.Contracts.Where(c => vehicles.Contains(c.Vehicle));
             var viewModels = new List<VehicleSummaryViewModel>();
+            IEnumerable<Member> members = _context.Members;
 
             foreach (ParkedVehicle vehicle in vehicles)
             {
-                var parkingDate = contracts.FirstOrDefault(c => c.Vehicle.RegistrationNumber
-                                                    == vehicle.RegistrationNumber);
-                if (parkingDate == null)
-                {
-                    //Something has gone wrong
-                    throw new ApplicationException("ParkingContract for a ParkedVehicle not found");
-                }
 
-                VehicleSummaryViewModel viewModel = CreateSummaryViewModel(vehicle, parkingDate);
+                VehicleSummaryViewModel viewModel = CreateSummaryViewModel(vehicle, members);
 
                 viewModels.Add(viewModel);
             }
@@ -120,28 +117,57 @@ namespace Garage2.Controllers
                 case "Colour_desc":
                     viewModels = viewModels.OrderByDescending(s => s.Colour).ToList();
                     break;
+                case "OwnerName":
+                    viewModels = viewModels.OrderBy(s => s.OwnerName).ToList();
+                    break;
+                case "OwnerName_desc":
+                    viewModels = viewModels.OrderByDescending(s => s.OwnerName).ToList();
+                    break;
                 default:
                     viewModels = viewModels.OrderBy(s => s.Type).ToList();
                     break;
             }
 
-            return View(viewModels);
+            return View(new Tuple<IEnumerable<VehicleSummaryViewModel>, IEnumerable<SelectListItem>>
+                                 (viewModels, vehicleTypeSelectItems));
 
         }
 
-        private static VehicleSummaryViewModel CreateSummaryViewModel(ParkedVehicle vehicle, ParkingContract parkingDate)
+        private async Task<List<SelectListItem>> GetVehicleTypeSelectListItems()
+        {
+            var vehicleTypeSelectItems = new List<SelectListItem>();
+            var vehicleTypes = await _context.VehicleTypes.ToListAsync();
+            foreach (VehicleType vehicleType in vehicleTypes)
+            {
+                var item = new SelectListItem()
+                {
+                    Value = vehicleType.Id.ToString(),
+                    Text = vehicleType.Name
+                };
+                vehicleTypeSelectItems.Add(item);
+            }
+
+            return vehicleTypeSelectItems;
+        }
+
+        private static VehicleSummaryViewModel CreateSummaryViewModel(ParkedVehicle vehicle, IEnumerable<Member> members)
         {
             var model = new VehicleSummaryViewModel();
+            var owner = members.FirstOrDefault(m => m.MemberId == vehicle.MemberId);
             model.Colour = vehicle.Colour;
             model.RegistrationNumber = vehicle.RegistrationNumber;
-            model.ParkingTime = DateTime.Now - parkingDate.ParkingDate;
+            model.ParkingTime = DateTime.Now - vehicle.ParkingDate;
             model.Type = vehicle.Type;
+            model.OwnerName = owner.FirstName + " " + owner.LastName;
             return model;
         }
 
+
         // Get: Vehicle/Park
-        public IActionResult Park()
+        public async Task<IActionResult> Park()
         {
+            TempData.Keep();
+            ViewData["selectItems"] = await GetVehicleTypeSelectListItems();
             return View();
 
         }
@@ -151,18 +177,27 @@ namespace Garage2.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Park(ParkParkedVehicleViewModel viewModel)
         {
+            var parkSpots = ParkingSpotContainer.GetParkSpots(_configuration);
             if (ModelState.IsValid)
             {
                 var vehicle = new ParkedVehicle();
-                int numberRequired;
-                switch (viewModel.Type)
+                vehicle.VehicleTypeId = int.Parse(Request.Form["Type"].ToString());
+                if (vehicle.VehicleTypeId == 0)
                 {
-                    case VehicleType.Bus:
+                    throw new ArgumentException("The value of the SelectItem selected was not non-zero.");
+                }
+                var member = TempDataExtensions.Get<Member>(TempData, "member");
+                vehicle.MemberId = member.MemberId;
+                var vehicleType = await _context.VehicleTypes.Where(v => v.Id == vehicle.VehicleTypeId).FirstOrDefaultAsync();
+                int numberRequired;
+                switch (vehicleType.Name)
+                {
+                    case "Bus":
                         {
                             numberRequired = 2;
                             break;
                         }
-                    case VehicleType.Truck:
+                    case "Truck":
                         {
                             numberRequired = 3;
                             break;
@@ -175,29 +210,26 @@ namespace Garage2.Controllers
 
                 }
                 int startOfSpotSequence;
-                if (viewModel.Type != VehicleType.Motorcycle && ParkingSpotContainer.FindConsecutiveSpots(numberRequired, out startOfSpotSequence))
+                if (vehicleType.Name == "Motorcycle")
+                {
+                    {
+                        var spot = ParkingSpotContainer.GetAvailableSpot(parkSpots, true);
+                        if (spot != null)
+                        {
+                            PopulateVehicleFromViewModel(viewModel, vehicle);
+                            spot.Park(vehicle);
+                            spot.VehicleCount++;
+                            spot.HasMotorcycles = true;
+                        }
+                    }
+                }
+                else if (vehicleType.Name != "Motorcycle" && ParkingSpotContainer.FindConsecutiveSpots(numberRequired, out startOfSpotSequence))
                 {
                     PopulateVehicleFromViewModel(viewModel, vehicle);
                     ParkingSpotContainer.ParkOnMultipleSpots(startOfSpotSequence, numberRequired, vehicle);
 
                 }
-                else
-                {
-                    var spot = ParkingSpotContainer.GetAvailableSpot(ParkingSpotContainer.GetParkSpots(_configuration), true);
-                    if (spot != null)
-                    {
-                        PopulateVehicleFromViewModel(viewModel, vehicle);
-                        spot.Park(vehicle);
-                        spot.VehicleCount++;
-                        spot.HasMotorcycles = true;
-                    }
-                }
                 _context.Add(vehicle);
-                _context.Add(new ParkingContract()
-                {
-                    Vehicle = vehicle,
-                    ParkingDate = DateTime.Now
-                });
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
@@ -209,11 +241,11 @@ namespace Garage2.Controllers
         private static void PopulateVehicleFromViewModel(ParkParkedVehicleViewModel viewModel, ParkedVehicle vehicle)
         {
             vehicle.RegistrationNumber = viewModel.RegistrationNumber;
-            vehicle.Type = viewModel.Type;
             vehicle.Colour = viewModel.Colour;
             vehicle.Manufacturer = viewModel.Manufacturer;
             vehicle.Model = viewModel.Model;
             vehicle.NumberOfWheels = viewModel.NumberOfWheels;
+            vehicle.ParkingDate = DateTime.Now;
         }
 
         // GET: Vehicle/UnPark
@@ -243,10 +275,8 @@ namespace Garage2.Controllers
         public async Task<IActionResult> UnParkConfirmed(string RegNum)
         {
             var vehicle = await _context.ParkedVehicles.FindAsync(RegNum);
-            var contract = await _context.Contracts.FirstOrDefaultAsync(c => c.Vehicle == vehicle);
-            if (contract != null && contract != null)
+            if (vehicle != null)
             {
-                _context.Contracts.Remove(contract);
                 _context.ParkedVehicles.Remove(vehicle);
                 await _context.SaveChangesAsync();
             }
@@ -260,7 +290,6 @@ namespace Garage2.Controllers
             } while (ParkingSpotContainer.FindSpotByVehicle(vehicle) != null);
 
             TempData["vehicle"] = JsonConvert.SerializeObject(vehicle);
-            TempData["contract"] = JsonConvert.SerializeObject(contract);
             TempData.Keep();
             return RedirectToAction(nameof(ParkingReceipt));
 
@@ -269,27 +298,28 @@ namespace Garage2.Controllers
         public IActionResult ParkingReceipt()
         {
             var vehicleString = TempData["vehicle"] as string;
-            var contractString = TempData["contract"] as string;
             var vehicle = JsonConvert.DeserializeObject<ParkedVehicle>(vehicleString) as ParkedVehicle;
-            var contract = JsonConvert.DeserializeObject<ParkingContract>(contractString) as ParkingContract;
-            if (contract == null || vehicle == null)
+            if (vehicle == null)
             {
                 throw new Exception("JsonConvert failed to convert TempData");
             }
             DateTime currentTime;
             TimeSpan parkingDuration;
             decimal cost;
-            GetParkingCost(contract, out currentTime, out parkingDuration, out cost);
+            GetParkingCost(vehicle, out currentTime, out parkingDuration, out cost);
+            var member = _context.Members.FirstOrDefault(m => m.MemberId == vehicle.MemberId);
+            var memberFullName = member.FullName;
+          
 
-            var model = new Tuple<ParkedVehicle, ParkingContract, DateTime, TimeSpan, decimal>(vehicle, contract, currentTime, parkingDuration, cost);
+           var model = new Tuple<ParkedVehicle, DateTime, TimeSpan, decimal, string>(vehicle, currentTime, parkingDuration, cost, memberFullName);
 
             return View(model);
         }
 
-        private void GetParkingCost(ParkingContract contract, out DateTime currentTime, out TimeSpan parkingDuration, out decimal cost)
+        private void GetParkingCost(ParkedVehicle vehicle, out DateTime currentTime, out TimeSpan parkingDuration, out decimal cost)
         {
             currentTime = DateTime.Now;
-            parkingDuration = currentTime - contract.ParkingDate;
+            parkingDuration = currentTime - vehicle.ParkingDate;
             cost = 50 * parkingDuration.Days;
             var durationWithDaysRemoved = parkingDuration - new TimeSpan(parkingDuration.Days * TimeSpan.TicksPerDay);
             cost += (decimal)durationWithDaysRemoved.TotalMinutes * minutePrice;
@@ -298,47 +328,46 @@ namespace Garage2.Controllers
         public async Task<IActionResult> GetStatistics()
         {
             // How many vehicle in vary types
-            Dictionary<VehicleType, int> types = new Dictionary<VehicleType, int>();
-            ParkedVehicle[] vehicles = _context.ParkedVehicles.ToArray();
+            var vehicles = await _context.ParkedVehicles.ToArrayAsync();
 
-            for (int i = 0; i < vehicles.Length; i++)
+            var vehicleTypes = _context.VehicleTypes;
+            var typeCounts = new Dictionary<VehicleType, int>();
+            foreach (var type in vehicleTypes)
             {
-                if (_context.ParkedVehicles.Count() > 0)
+                var count = vehicles.Where(v => v.VehicleTypeId == type.Id).Count();
+                if(count > 0)
                 {
-                    var typeName = vehicles[i].Type;
-                    if (types.ContainsKey(typeName))
-                        types[typeName] += 1;
-                    else
-                        types[typeName] = 1;
-
+                    typeCounts.Add(type, count);
                 }
-
+                   
             }
 
-            int Wheel = GetWheelCount(vehicles);
+            int Wheel = vehicles.Sum(v => v.NumberOfWheels);
 
             //Total Cost
-            decimal TotalCost = GetTotalParkingCost();
+            decimal TotalCost = GetTotalParkingCost(vehicles);
 
             //How many vehicles with color 
-            int WhiteColor = _context.ParkedVehicles.Where(v => v.Colour.ToLower().Equals("white")).Count();
-            int BlackColor = _context.ParkedVehicles.Where(v => v.Colour.ToLower().Equals("black")).Count();
-            int RedColor = _context.ParkedVehicles.Where(v => v.Colour.ToLower().Equals("red")).Count();
-            int BlueColor = _context.ParkedVehicles.Where(v => v.Colour.ToLower().Equals("blue")).Count();
+            var colours = vehicles.Select(v => v.Colour).Distinct();
+            var colourCounts = new Dictionary<string, int>();
+            foreach (var colour in colours)
+            {
+                var count = vehicles.Where(v => v.Colour == colour).Count();
+                colourCounts.Add(colour, count);
+            }
 
-            var model = new Tuple<Dictionary<VehicleType, int>, int, decimal, int, int ,int, int>(types, Wheel, TotalCost, WhiteColor, BlackColor, RedColor, BlueColor);
+            var model = new Tuple<Dictionary<VehicleType, int>, int, decimal, Dictionary<string, int>>(typeCounts, Wheel, TotalCost, colourCounts);
 
             return View(model);
         }
 
-        private decimal GetTotalParkingCost()
+        private decimal GetTotalParkingCost(ParkedVehicle[] vehicles)
         {
-            var contracts = _context.Contracts.ToArray();
             var TotalCost = 0.0M;
             var currentTime = DateTime.Now;
-            for (int i = 0; i < contracts.Length; i++)
+            for (int i = 0; i < vehicles.Length; i++)
             {
-                var contract = contracts[i];
+                var contract = vehicles[i];
                 TimeSpan parkingDuration;
                 decimal cost;
                 GetParkingCost(contract, out currentTime, out parkingDuration, out cost);
@@ -349,17 +378,13 @@ namespace Garage2.Controllers
             return TotalCost;
         }
 
-        private static int GetWheelCount(ParkedVehicle[] vehicles)
+        public IActionResult ValidateRegistrationNumber(string registrationNumber)
         {
-            // Total wheels
-            int Wheel = 0;
-            foreach (var vehicle in vehicles)
+            if (_context.ParkedVehicles.Any(m => m.RegistrationNumber == registrationNumber))
             {
-                Wheel = Wheel + vehicle.NumberOfWheels;
-
+                return Json($"The vehicle with registration number {registrationNumber} is already in the garage.");
             }
-
-            return Wheel;
+            return Json(true);
         }
     }
 }

@@ -39,7 +39,7 @@ namespace Garage2.Models
             for (var i = 0; i < ParkedVehicles.Length; i++)
             {
                 var v = ParkedVehicles[i];
-                if (v.Equals(vehicle))
+                if (v != null && v.Equals(vehicle))
                 {
                     ParkedVehicles[i] = null;
                     VehicleCount--;

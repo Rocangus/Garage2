@@ -11,10 +11,10 @@ namespace Garage2.Data
     {
         private static ParkSpot[] parkSpots;
         public static bool IsInitialized { get; set; }
-        private static ParkSpot FirstAvailableSpot;
         private static int nextSpotId = 0;
         private static int lastFinalIndex;
         private static int lastSequenceStart;
+        private static ParkSpot AvailableSpot;
 
         public static ParkSpot[] GetParkSpots(IConfiguration configuration)
         {
@@ -33,10 +33,10 @@ namespace Garage2.Data
                 if (spot == null)
                 {
                     spot = new ParkSpot(nextSpotId);
-                    parkSpots[nextSpotId] = FirstAvailableSpot = spot;
+                    parkSpots[nextSpotId] = spot;
                     nextSpotId++;
                 }
-                FirstAvailableSpot = spot;
+                AvailableSpot = spot;
                 return true;
             }
             else
@@ -57,10 +57,8 @@ namespace Garage2.Data
 
         public static ParkSpot GetAvailableSpot(ParkSpot[] spots, bool forMotorcycle)
         {
-            if (FirstAvailableSpot != null && SpotIsAvailable(FirstAvailableSpot, forMotorcycle))
-                return FirstAvailableSpot;
             if (SpotIsAvailable(spots, forMotorcycle))
-                return FirstAvailableSpot;
+                return AvailableSpot;
             return null;
         }
 
