@@ -34,6 +34,8 @@ namespace Garage2.Models
 
         public int MemberId { get; set; }
 
+        public Member Member { get; set; }
+
         [Range(2, 18)]
         [Display(Name = "Number of Wheels")]
         public int NumberOfWheels { get; set; }

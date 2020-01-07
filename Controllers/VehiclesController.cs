@@ -74,8 +74,8 @@ namespace Garage2.Controllers
 
 
             var vehicles = string.IsNullOrWhiteSpace(RegNum) ?
-                _context.ParkedVehicles :
-                _context.ParkedVehicles.Where(m => m.RegistrationNumber.Contains(RegNum));
+                _context.ParkedVehicles.Include(v => v.Member) :
+                _context.ParkedVehicles.Include(v => v.Member).Where(m => m.RegistrationNumber.Contains(RegNum));
 
             IEnumerable<SelectListItem> vehicleTypeSelectItems = await GetVehicleTypeSelectListItems();
 
@@ -90,7 +90,7 @@ namespace Garage2.Controllers
             {
                 if (vehicle.IsParked)
                 {
-                    VehicleSummaryViewModel viewModel = CreateSummaryViewModel(vehicle, members);
+                    VehicleSummaryViewModel viewModel = CreateSummaryViewModel(vehicle);
                     viewModels.Add(viewModel);
                 }
             }
@@ -151,15 +151,15 @@ namespace Garage2.Controllers
             return vehicleTypeSelectItems;
         }
 
-        private static VehicleSummaryViewModel CreateSummaryViewModel(ParkedVehicle vehicle, IEnumerable<Member> members)
+        private static VehicleSummaryViewModel CreateSummaryViewModel(ParkedVehicle vehicle)
         {
             var model = new VehicleSummaryViewModel();
-            var owner = members.FirstOrDefault(m => m.MemberId == vehicle.MemberId);
+            var owner = vehicle.Member;
             model.Colour = vehicle.Colour;
             model.RegistrationNumber = vehicle.RegistrationNumber;
             model.ParkingTime = DateTime.Now - vehicle.ParkingDate;
             model.Type = vehicle.Type;
-            model.OwnerName = owner.FirstName + " " + owner.LastName;
+            model.OwnerName = owner.FullName;
             return model;
         }
 
