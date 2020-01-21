@@ -27,8 +27,8 @@ namespace Garage2.Controllers
         public async Task<IActionResult> Index(string name)
         {
             var search = string.IsNullOrWhiteSpace(name) ?
-               await _context.Members.ToListAsync ()  :
-               await _context.Members.Where(m => (m.FirstName + " " + m.LastName).Contains(name)).ToListAsync();
+               await _context.Members.Include(m => m.OwnedVehicles).ToListAsync ()  :
+               await _context.Members.Include(m => m.OwnedVehicles).Where(m => (m.FirstName + " " + m.LastName).Contains(name)).ToListAsync();
 
             var models = new List<MemberSummaryViewModel>();
             var vehicles = await _context.ParkedVehicles.ToListAsync();
@@ -40,7 +40,6 @@ namespace Garage2.Controllers
                     FirstName = member.FirstName,
                     LastName = member.LastName
                 };
-                member.OwnedVehicles = vehicles.Where(v => v.MemberId == member.MemberId).ToList();
                 model.Count = member.OwnedVehicles.Count;
                 models.Add(model);
             }
